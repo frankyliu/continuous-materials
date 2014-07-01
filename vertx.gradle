@@ -1,8 +1,6 @@
 group = modowner
 archivesBaseName = modname
-
 project.ext.moduleName = "$modowner~$modname~$version"
-
 
 task copyMod(type: Copy, dependsOn: 'classes', description: 'Assemble the module into the local mods directory') {
     into "build/mods/$moduleName"
@@ -20,7 +18,7 @@ task pullInDeps(type: JavaExec, dependsOn: copyMod, description: 'Pull in all th
     args = ['pulldeps', moduleName]
 }
 
-task modZip(type: Zip, dependsOn: 'pullInDeps', description: 'Package the module .zip file') {
+task modZip(type: Zip, dependsOn: pullInDeps, description: 'Package the module .zip file') {
     group = 'vert.x'
     classifier = "mod"
     description = "Assembles a vert.x module"
@@ -29,15 +27,26 @@ task modZip(type: Zip, dependsOn: 'pullInDeps', description: 'Package the module
     from copyMod
 }
 
-
-artifacts {
-    archives modZip
+task addlatformLibDir(type: Copy, dependsOn: pullInDeps) {
+    into("build/mods/$moduleName/platform_lib")
+    from {
+        configurations.compile.findAll {
+            it.getName() == 'log4j-1.2.17.jar'
+        }
+    }
+    from('src/main/resources') {
+        include 'log4j.properties'
+    }
 }
 
-task fatJar(type: JavaExec, dependsOn: modZip, description: 'Creates a fat executable jar which contains everything needed to run the module') {
+task fatJar(type: JavaExec, dependsOn: addlatformLibDir, description: 'Creates a fat executable jar which contains everything needed to run the module') {
     main = 'org.vertx.java.platform.impl.cli.Starter'
     classpath = sourceSets.main.compileClasspath
     systemProperties = ["vertx.mods": "build/mods"]
     args = ['fatjar', moduleName, '-d', 'build/libs']
+}
+
+artifacts {
+    archives modZip
 }
 
