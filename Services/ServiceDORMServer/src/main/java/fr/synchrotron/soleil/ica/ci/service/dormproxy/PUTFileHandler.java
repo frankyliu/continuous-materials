@@ -15,10 +15,12 @@ public class PUTFileHandler implements Handler<HttpServerRequest> {
 
     private final Vertx vertx;
     private final String fsRepositoryRootDir;
+    private final String proxyPath;
 
-    public PUTFileHandler(Vertx vertx, String fsRepositoryRootDir) {
+    public PUTFileHandler(Vertx vertx, String fsRepositoryRootDir, String proxyPath) {
         this.vertx = vertx;
         this.fsRepositoryRootDir = fsRepositoryRootDir;
+        this.proxyPath =proxyPath;
     }
 
     @Override
@@ -27,8 +29,7 @@ public class PUTFileHandler implements Handler<HttpServerRequest> {
         final String path = request.path();
         System.out.println("PUT" + path);
 
-        final String prefix = DORMProxyEndpointVerticle.PROXY_PATH;
-        String artifactPath = path.substring(prefix.length() + 1);
+        String artifactPath = path.substring(proxyPath.length() + 1);
 
         //TODO check
         final File uploadedDirectory = new File(fsRepositoryRootDir, artifactPath.substring(0, artifactPath.lastIndexOf("/")));
