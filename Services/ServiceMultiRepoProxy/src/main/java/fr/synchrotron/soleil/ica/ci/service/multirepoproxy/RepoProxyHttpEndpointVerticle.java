@@ -1,7 +1,6 @@
 package fr.synchrotron.soleil.ica.ci.service.multirepoproxy;
 
-import fr.synchrotron.soleil.ica.proxy.utilities.HttpEndpointInfo;
-import fr.synchrotron.soleil.ica.proxy.utilities.PUTHandler;
+import fr.synchrotron.soleil.ica.proxy.midlleware.HttpEndpointInfo;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.http.HttpServer;
@@ -27,7 +26,7 @@ public class RepoProxyHttpEndpointVerticle extends Verticle {
         final int port = config.getInteger("proxyPort");
         final String proxyPath = config.getString("proxyPath");
 
-        //GET
+        //HEAD and GET
         final JsonArray repositories = config.getArray("repositories.get");
         final List<HttpEndpointInfo> repos = buildRepoUrls(repositories);
         RouteMatcher routeMatcher = new RouteMatcher();
@@ -41,7 +40,7 @@ public class RepoProxyHttpEndpointVerticle extends Verticle {
         final int repoPortPUT = putJsonObject.getInteger("port");
         final String repoURIPathPUT = putJsonObject.getString("uri");
         HttpEndpointInfo httpEndpointInfo = new HttpEndpointInfo(repoHostPUT, repoPortPUT, repoURIPathPUT);
-        routeMatcher.putWithRegEx(proxyPath + "/.*", new PUTHandler(vertx, proxyPath, httpEndpointInfo));
+        routeMatcher.putWithRegEx(proxyPath + "/.*", new PUTRequestHandler(vertx, proxyPath, httpEndpointInfo));
 
 
         //Other than HEAD, GET or PUT are not supported

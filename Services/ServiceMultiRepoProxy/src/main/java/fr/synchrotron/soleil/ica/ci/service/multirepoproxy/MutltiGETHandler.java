@@ -1,8 +1,11 @@
 package fr.synchrotron.soleil.ica.ci.service.multirepoproxy;
 
-import fr.synchrotron.soleil.ica.proxy.utilities.GETHandler;
-import fr.synchrotron.soleil.ica.proxy.utilities.HttpEndpointInfo;
-import fr.synchrotron.soleil.ica.proxy.utilities.HttpServerRequestWrapper;
+
+import fr.synchrotron.soleil.ica.proxy.midlleware.HttpEndpointInfo;
+import fr.synchrotron.soleil.ica.proxy.midlleware.MiddlewareContext;
+import fr.synchrotron.soleil.ica.proxy.midlleware.ProxyRequestType;
+import fr.synchrotron.soleil.ica.proxy.midlleware.ProxyService;
+import fr.synchrotron.soleil.ica.proxy.midlleware.response.DefaultClientResponseHandler;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.Vertx;
@@ -75,12 +78,10 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
             }
         });
 
-        final HttpServerRequestWrapper requestWrapper
-                = new HttpServerRequestWrapper(request, httpClient, proxyPath, httpEndpointInfo, vertx);
 
-        final HttpServerRequestWrapper.RequestTemplate requestTemplate = requestWrapper.clientTemplate();
+       final MiddlewareContext context = new MiddlewareContext(vertx, proxyPath, request, httpClient, httpEndpointInfo, ProxyRequestType.ANY);
 
-        HttpClientRequest vertxRequest = httpClient.head(requestTemplate.getClientRequestPath(), new Handler<HttpClientResponse>() {
+        HttpClientRequest vertxRequest = httpClient.head(context.getClientRequestPath(), new Handler<HttpClientResponse>() {
             @Override
             public void handle(HttpClientResponse clientResponse) {
 
@@ -96,9 +97,18 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
                                 }
                             });
                         } else {
-                            httpClient.close();
-                            GETHandler getHandler = new GETHandler(vertx, proxyPath, httpEndpointInfo);
-                            getHandler.handle(requestWrapper);
+                            ProxyService proxyService = new ProxyService();
+                            HttpClientRequest clientRequest = proxyService.getClientRequest(context, new DefaultClientResponseHandler(context).get());
+                            clientRequest.headers().set(request.headers());
+                            clientRequest.exceptionHandler(new Handler<Throwable>() {
+                                @Override
+                                public void handle(Throwable throwable) {
+                                    ProxyService proxyService = new ProxyService();
+                                    proxyService.sendError(request, throwable);
+                                    httpClient.close();
+                                }
+                            });
+                            clientRequest.end();
                         }
                         break;
                     case 301:
@@ -122,7 +132,8 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
                 if (isUnreasolvedHost(throwable)) {
                     processRepository(request, repositoryScanner.getNextIndex(repoIndex));
                 } else {
-                    requestTemplate.sendError(throwable);
+                    ProxyService proxyService = new ProxyService();
+                    proxyService.sendError(request, throwable);
                 }
             }
 

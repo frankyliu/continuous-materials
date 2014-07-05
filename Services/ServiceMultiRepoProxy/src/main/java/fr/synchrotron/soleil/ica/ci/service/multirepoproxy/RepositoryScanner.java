@@ -1,6 +1,7 @@
 package fr.synchrotron.soleil.ica.ci.service.multirepoproxy;
 
-import fr.synchrotron.soleil.ica.proxy.utilities.HttpEndpointInfo;
+
+import fr.synchrotron.soleil.ica.proxy.midlleware.HttpEndpointInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  */
 public class RepositoryScanner {
 
-    private List<HttpEndpointInfo> repos = new ArrayList<HttpEndpointInfo>();
+    private List<HttpEndpointInfo> repos = new ArrayList<>();
 
     public RepositoryScanner(List<HttpEndpointInfo> repoList) {
         if (repoList == null) {

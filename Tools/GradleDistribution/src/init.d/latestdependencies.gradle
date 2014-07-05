@@ -9,7 +9,6 @@ initscript {
 }
 
 
-
 apply plugin: LatestDependencyPlugin
 
 import fr.synchrotron.soleil.ica.tools.gradle.distrib.MavenVersionResolver;

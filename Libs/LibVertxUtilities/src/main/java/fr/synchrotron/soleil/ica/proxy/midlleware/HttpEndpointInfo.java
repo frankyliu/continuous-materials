@@ -1,4 +1,4 @@
-package fr.synchrotron.soleil.ica.proxy.utilities;
+package fr.synchrotron.soleil.ica.proxy.midlleware;
 
 /**
  * @author Gregory Boissinot
