@@ -2,7 +2,6 @@ package fr.synchrotron.soleil.ica.ci.service.legacymavenproxy;
 
 import com.github.ebx.core.MessageFilterService;
 import com.github.ebx.core.MessagingTemplate;
-import fr.synchrotron.soleil.ica.ci.service.legacymavenproxy.ServiceAddressRegistry;
 import fr.synchrotron.soleil.ica.proxy.midlleware.MiddlewareContext;
 import fr.synchrotron.soleil.ica.proxy.midlleware.ProxyService;
 import fr.synchrotron.soleil.ica.proxy.midlleware.response.DefaultClientResponseHandler;

@@ -2,7 +2,6 @@ package fr.synchrotron.soleil.ica.ci.service.legacymavenproxy;
 
 import fr.synchrotron.soleil.ica.proxy.midlleware.HttpEndpointInfo;
 import fr.synchrotron.soleil.ica.proxy.midlleware.ProxyRequestType;
-
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.vertx.java.busmods.BusModBase;
 import org.vertx.java.core.Handler;
