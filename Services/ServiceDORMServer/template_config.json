@@ -1,8 +1,9 @@
 {
     "httpPort": 8092,
-    "fs.repository.rootdir": "/tmp/repo",
+    "proxyPath":"/dormservice",
+    "fs.repository.rootdir": "D:/tmp/test-repo-soleil",
     "mongo": {
-        "mongoHost": "127.0.0.1",
+        "mongoHost": "mongodb-srv2.ica.synchrotron-soleil.fr",
         "mongoPort": 27017,
         "mongoDbName": "repo"
     }

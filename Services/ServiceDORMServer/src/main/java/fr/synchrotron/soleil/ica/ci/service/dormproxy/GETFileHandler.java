@@ -16,10 +16,12 @@ public class GETFileHandler implements Handler<HttpServerRequest> {
 
     private final Vertx vertx;
     private final String fsRepositoryRootDir;
+    private final String proxyPath;
 
-    public GETFileHandler(Vertx vertx, String fsRepositoryRootDir) {
+    public GETFileHandler(Vertx vertx, String fsRepositoryRootDir, String proxyPath) {
         this.vertx = vertx;
         this.fsRepositoryRootDir = fsRepositoryRootDir;
+        this.proxyPath = proxyPath;
     }
 
     @Override
@@ -28,8 +30,8 @@ public class GETFileHandler implements Handler<HttpServerRequest> {
         final String path = request.path();
         System.out.println("GET" + path);
 
-        final String prefix = DORMProxyEndpointVerticle.PROXY_PATH;
-        String artifactPath = path.substring(prefix.length() + 1);
+
+        String artifactPath = path.substring(proxyPath.length() + 1);
 
         //TODO check
         final File getterDirectory = new File(fsRepositoryRootDir, artifactPath.substring(0, artifactPath.lastIndexOf("/")));
