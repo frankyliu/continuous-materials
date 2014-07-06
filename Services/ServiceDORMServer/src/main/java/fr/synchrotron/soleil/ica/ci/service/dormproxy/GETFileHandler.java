@@ -38,23 +38,36 @@ public class GETFileHandler implements Handler<HttpServerRequest> {
         final String filename = artifactPath.substring(artifactPath.lastIndexOf("/") + 1);
         final File getterFile = new File(getterDirectory, filename);
 
-        vertx.fileSystem().open(getterFile.getPath(), new AsyncResultHandler<AsyncFile>() {
-            public void handle(AsyncResult<AsyncFile> ar) {
-                if (ar.succeeded()) {
-                    AsyncFile asyncFile = ar.result();
-                    request.response().setChunked(true);
-                    request.response().putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(getterFile.length()));
-                    Pump.createPump(asyncFile, request.response()).start();
-                    asyncFile.endHandler(new VoidHandler() {
-                        public void handle() {
-                            request.response().end();
+        vertx.fileSystem().exists(getterFile.getPath(), new AsyncResultHandler<Boolean>() {
+            @Override
+            public void handle(AsyncResult<Boolean> asyncResult) {
+                if (asyncResult.result().booleanValue()) {
+                    vertx.fileSystem().open(getterFile.getPath(), new AsyncResultHandler<AsyncFile>() {
+                        public void handle(AsyncResult<AsyncFile> ar) {
+                            if (ar.succeeded()) {
+                                AsyncFile asyncFile = ar.result();
+                                request.response().setChunked(true);
+                                request.response().putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(getterFile.length()));
+                                Pump.createPump(asyncFile, request.response()).start();
+                                asyncFile.endHandler(new VoidHandler() {
+                                    public void handle() {
+                                        request.response().end();
+                                    }
+                                });
+                            } else {
+                                request.response().setStatusCode(HttpResponseStatus.NOT_FOUND.code());
+                                request.response().end();
+                            }
                         }
                     });
                 } else {
                     request.response().setStatusCode(HttpResponseStatus.NOT_FOUND.code());
                     request.response().end();
                 }
+
             }
         });
+
+
     }
 }

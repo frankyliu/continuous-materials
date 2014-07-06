@@ -12,16 +12,16 @@ import org.vertx.java.core.http.RouteMatcher;
  */
 public class DORMProxyEndpointVerticle extends BusModBase {
 
-   // public static final String PROXY_PATH = "/dormservice";
-
     @Override
     public void start() {
 
         super.start();
 
-        final int port = getMandatoryIntConfig("httpPort");
+        final int port = getMandatoryIntConfig("proxyPort");
         final String proxyPath = getMandatoryStringConfig("proxyPath");
         final String fsRepositoryRootDir = getMandatoryStringConfig("fs.repository.rootdir");
+
+        final boolean allowRedeploy = getMandatoryBooleanConfig("allow_redeploy");
 
         final HttpServer httpServer = vertx.createHttpServer();
         RouteMatcher routeMatcher = new RouteMatcher();
@@ -38,9 +38,8 @@ public class DORMProxyEndpointVerticle extends BusModBase {
         routeMatcher.putWithRegEx(proxyPath + "/.*", new PUTFileHandler(vertx, fsRepositoryRootDir, proxyPath));
 
         routeMatcher.getWithRegEx(proxyPath + "/.*/maven-metadata.xml", new GETMetadataHandler());
+        routeMatcher.getWithRegEx(proxyPath + "/.*.pom", new GETPOMHandler(vertx, proxyPath));
         routeMatcher.getWithRegEx(proxyPath + "/.*", new GETFileHandler(vertx, fsRepositoryRootDir, proxyPath));
-        //TODO
-        routeMatcher.getWithRegEx(proxyPath + "/.*.pom", new GETPOMHandler(vertx));
 
 
         routeMatcher.allWithRegEx(proxyPath + "/.*", new Handler<HttpServerRequest>() {

@@ -5,6 +5,7 @@ import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomexporter.POMDocumentRepositor
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomexporter.POMExportService;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service.POMImportService;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service.dictionary.SoleilDictionary;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.repository.exception.NoSuchElementException;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.BasicMongoDBDataSource;
 import org.vertx.java.busmods.BusModBase;
 import org.vertx.java.core.Handler;
@@ -36,11 +37,9 @@ public class POMMetadataWorkerVerticle extends BusModBase {
                         switch (action) {
                             case ACTION_IMPORT:
                                 importPom(message, mongoHost, mongoPort, mongoDbName);
-                                message.reply(true);
                                 break;
                             case ACTION_EXPORT:
                                 exportPom(message, mongoHost, mongoPort, mongoDbName);
-                                message.reply(true);
                                 break;
                             default:
                                 message.reply("Wrong Verticle Action in POMMetadataWorkerVerticle.");
@@ -51,29 +50,43 @@ public class POMMetadataWorkerVerticle extends BusModBase {
     }
 
     private void importPom(Message<JsonObject> message, String mongoHost, int mongoPort, String mongoDbName) {
-        String pomContent = message.body().getString("content");
-        final POMImportService pomImportService = new POMImportService(
-                new SoleilDictionary(),
-                new BasicMongoDBDataSource(mongoHost, mongoPort, mongoDbName));
-        pomImportService.importPomFile(pomContent);
+        try {
+            String pomContent = message.body().getString("content");
+
+            final POMImportService pomImportService = new POMImportService(
+                    new SoleilDictionary(),
+                    new BasicMongoDBDataSource(mongoHost, mongoPort, mongoDbName));
+            pomImportService.importPomFile(pomContent);
+            message.reply(true);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            message.fail(-1, t.getMessage());
+        }
     }
 
     private void exportPom(Message<JsonObject> message,
                            String mongoHost, int mongoPort, String mongoDbName) {
+        try {
+            //TODO use check
+            final JsonObject body = message.body();
+            String org = body.getString("org");
+            String name = body.getString("name");
+            String version = body.getString("version");
+            String status = body.getString("status");
 
-        //TODO use check
-        final JsonObject body = message.body();
-        String org = body.getString("org");
-        String name = body.getString("name");
-        String version = body.getString("version");
-        String status = body.getString("status");
-
-        ArtifactDocumentKey artifactDocumentKey = new ArtifactDocumentKey(org, name, version, status);
-        final POMExportService
-                pomExportService = new POMExportService(
-                new POMDocumentRepository(new BasicMongoDBDataSource(mongoHost, mongoPort, mongoDbName)));
-        StringWriter stringWriter = new StringWriter();
-        pomExportService.exportPomFile(stringWriter, artifactDocumentKey);
+            ArtifactDocumentKey artifactDocumentKey = new ArtifactDocumentKey(org, name, version, status);
+            final POMExportService
+                    pomExportService = new POMExportService(
+                    new POMDocumentRepository(new BasicMongoDBDataSource(mongoHost, mongoPort, mongoDbName)));
+            StringWriter stringWriter = new StringWriter();
+            pomExportService.exportPomFile(stringWriter, artifactDocumentKey);
+            message.reply(stringWriter.toString());
+        } catch (NoSuchElementException nse) {
+            message.fail(0, "Artifact doesn't exist.");
+        } catch (Throwable t) {
+            t.printStackTrace();
+            message.fail(-1, t.getMessage());
+        }
     }
 
 }
