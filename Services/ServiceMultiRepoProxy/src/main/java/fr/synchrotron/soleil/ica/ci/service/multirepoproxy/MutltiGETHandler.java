@@ -55,7 +55,7 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
             return;
         }
 
-        System.out.println("Trying to download " + request.path() + "from " + repositoryScanner.getRepoFromIndex(repoIndex));
+        LOG.info("Trying to download " + request.path() + "from " + repositoryScanner.getRepoFromIndex(repoIndex));
 
         final HttpEndpointInfo httpEndpointInfo = repositoryScanner.getRepoFromIndex(repoIndex);
 
@@ -67,21 +67,22 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
                 .setPort(httpEndpointInfo.getPort())
                 .setKeepAlive(false);
 
-        //Sample use case: timeout on client request
-        request.exceptionHandler(new Handler<Throwable>() {
+        final Handler<Throwable> exceptionHandler = new Handler<Throwable>() {
             @Override
-            public void handle(Throwable t) {
-                LOG.error("Severe error during request processing :", t);
-                request.response().setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code());
-                request.response().end();
-                httpClient.close();
+            public void handle(Throwable throwable) {
+                ProxyService proxyService = new ProxyService();
+                proxyService.sendError(request, throwable);
+                if (httpClient != null) {
+                    httpClient.close();
+                }
             }
-        });
+        };
+        request.exceptionHandler(exceptionHandler); //Sample use case: timeout on client request
+        httpClient.exceptionHandler(exceptionHandler);
 
+        final MiddlewareContext context = new MiddlewareContext(vertx, proxyPath, request, httpClient, httpEndpointInfo, ProxyRequestType.ANY);
 
-       final MiddlewareContext context = new MiddlewareContext(vertx, proxyPath, request, httpClient, httpEndpointInfo, ProxyRequestType.ANY);
-
-        HttpClientRequest vertxRequest = httpClient.head(context.getClientRequestPath(), new Handler<HttpClientResponse>() {
+        HttpClientRequest clientRequest = httpClient.head(context.getClientRequestPath(), new Handler<HttpClientResponse>() {
             @Override
             public void handle(HttpClientResponse clientResponse) {
 
@@ -98,17 +99,11 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
                             });
                         } else {
                             ProxyService proxyService = new ProxyService();
-                            HttpClientRequest clientRequest = proxyService.getClientRequest(context, new DefaultClientResponseHandler(context).get());
-                            clientRequest.headers().set(request.headers());
-                            clientRequest.exceptionHandler(new Handler<Throwable>() {
-                                @Override
-                                public void handle(Throwable throwable) {
-                                    ProxyService proxyService = new ProxyService();
-                                    proxyService.sendError(request, throwable);
-                                    httpClient.close();
-                                }
-                            });
-                            clientRequest.end();
+                            HttpClientRequest getClientRequest = proxyService.getClientRequest(context, new DefaultClientResponseHandler(context).get());
+                            getClientRequest.headers().set(request.headers());
+                            getClientRequest.exceptionHandler(exceptionHandler);
+                            getClientRequest.end();
+                            httpClient.close();
                         }
                         break;
                     case 301:
@@ -126,7 +121,7 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
             }
         });
 
-        vertxRequest.exceptionHandler(new Handler<Throwable>() {
+        clientRequest.exceptionHandler(new Handler<Throwable>() {
             @Override
             public void handle(Throwable throwable) {
                 if (isUnreasolvedHost(throwable)) {
@@ -142,7 +137,7 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
             }
         });
 
-        vertxRequest.end();
+        clientRequest.end();
     }
 
 }
