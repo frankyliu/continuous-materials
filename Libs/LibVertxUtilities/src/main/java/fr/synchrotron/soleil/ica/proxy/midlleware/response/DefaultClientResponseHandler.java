@@ -7,12 +7,16 @@ import org.vertx.java.core.Handler;
 import org.vertx.java.core.http.HttpClient;
 import org.vertx.java.core.http.HttpClientResponse;
 import org.vertx.java.core.http.HttpServerRequest;
+import org.vertx.java.core.logging.Logger;
+import org.vertx.java.core.logging.impl.LoggerFactory;
 import org.vertx.java.core.streams.Pump;
 
 /**
  * @author Gregory Boissinot
  */
 public class DefaultClientResponseHandler implements ClientResponseHandler {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultClientResponseHandler.class);
 
     protected MiddlewareContext context;
 
@@ -27,7 +31,11 @@ public class DefaultClientResponseHandler implements ClientResponseHandler {
             @Override
             public void handle(HttpClientResponse clientResponse) {
                 clientResponse.pause();
-                request.response().setStatusCode(clientResponse.statusCode());
+                final int statusCode = clientResponse.statusCode();
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug(String.format("Returned endpoint status code: %s", statusCode));
+                }
+                request.response().setStatusCode(statusCode);
                 request.response().setStatusMessage(clientResponse.statusMessage());
                 request.response().headers().set(clientResponse.headers());
                 request.response().setChunked(true);
