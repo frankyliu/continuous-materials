@@ -60,4 +60,14 @@ public class MiddlewareContext {
         String repoUri = httpEndpointInfo.getUri();
         return repoUri.endsWith("/") ? (repoUri + artifactPath) : (repoUri + "/" + artifactPath);
     }
+
+    public void closeHttpClient() {
+        try {
+            if (httpClient != null) {
+                httpClient.close();
+            }
+        } catch (IllegalStateException ie) {
+            //Ignore. The client is already closed.
+        }
+    }
 }

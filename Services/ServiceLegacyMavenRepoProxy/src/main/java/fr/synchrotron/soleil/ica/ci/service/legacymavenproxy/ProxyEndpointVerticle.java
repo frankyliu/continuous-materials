@@ -64,17 +64,21 @@ public class ProxyEndpointVerticle extends BusModBase {
 
         final HttpEndpointInfo httpEndpointInfo = new HttpEndpointInfo(repoHostGET, repoPortGET, repoURIPathGET);
 
+        final ProxyRequestHandler pomProxyRequestHandler = new ProxyRequestHandler(vertx, proxyPath, httpEndpointInfo, ProxyRequestType.PON);
+        final ProxyRequestHandler pomSha1ProxyRequestHandler = new ProxyRequestHandler(vertx, proxyPath, httpEndpointInfo, ProxyRequestType.POMSHA1);
+        final ProxyRequestHandler anyProxyRequestHandler = new ProxyRequestHandler(vertx, proxyPath, httpEndpointInfo, ProxyRequestType.ANY);
+
         //--HEAD
         routeMatcher
-                .headWithRegEx(proxyPath + "/.*.pom", new ProxyRequestHandler(vertx, proxyPath, httpEndpointInfo, ProxyRequestType.PON))
-                .headWithRegEx(proxyPath + "/.*.pom.sha1", new ProxyRequestHandler(vertx, proxyPath, httpEndpointInfo, ProxyRequestType.POMSHA1))
-                .headWithRegEx(proxyPath + "/.*", new ProxyRequestHandler(vertx, proxyPath, httpEndpointInfo, ProxyRequestType.ANY));
+                .headWithRegEx(proxyPath + "/.*.pom", pomProxyRequestHandler)
+                .headWithRegEx(proxyPath + "/.*.pom.sha1", pomSha1ProxyRequestHandler)
+                .headWithRegEx(proxyPath + "/.*", anyProxyRequestHandler);
 
         //--GET
         routeMatcher
-                .getWithRegEx(proxyPath + "/.*.pom", new ProxyRequestHandler(vertx, proxyPath, httpEndpointInfo, ProxyRequestType.PON))
-                .getWithRegEx(proxyPath + "/.*.pom.sha1", new ProxyRequestHandler(vertx, proxyPath, httpEndpointInfo, ProxyRequestType.POMSHA1))
-                .getWithRegEx(proxyPath + "/.*", new ProxyRequestHandler(vertx, proxyPath, httpEndpointInfo, ProxyRequestType.ANY));
+                .getWithRegEx(proxyPath + "/.*.pom", pomProxyRequestHandler)
+                .getWithRegEx(proxyPath + "/.*.pom.sha1", pomSha1ProxyRequestHandler)
+                .getWithRegEx(proxyPath + "/.*", anyProxyRequestHandler);
     }
 
     private void putRequests(RouteMatcher routeMatcher, String proxyPath) {

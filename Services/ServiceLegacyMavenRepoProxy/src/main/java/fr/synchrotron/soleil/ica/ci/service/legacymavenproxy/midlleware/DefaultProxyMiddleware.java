@@ -1,6 +1,7 @@
-package fr.synchrotron.soleil.ica.ci.service.legacymavenproxy;
+package fr.synchrotron.soleil.ica.ci.service.legacymavenproxy.midlleware;
 
 import com.github.ebx.core.MessagingTemplate;
+import fr.synchrotron.soleil.ica.ci.service.legacymavenproxy.ServiceAddressRegistry;
 import fr.synchrotron.soleil.ica.ci.service.legacymavenproxy.pommetadata.POMCache;
 import fr.synchrotron.soleil.ica.proxy.midlleware.*;
 import fr.synchrotron.soleil.ica.proxy.midlleware.response.DefaultClientResponseHandler;
@@ -92,7 +93,7 @@ public class DefaultProxyMiddleware implements ProxyMiddleware {
         }
     }
 
-    public void uploadPom(final MiddlewareContext context) {
+    private void uploadPom(final MiddlewareContext context) {
 
         final HttpClient httpClient = context.getHttpClient();
         final String clientRequestPath = context.getClientRequestPath();
@@ -120,7 +121,7 @@ public class DefaultProxyMiddleware implements ProxyMiddleware {
                                     request.response().setStatusMessage(asyncResult.cause().getMessage());
                                 }
                                 request.response().end();
-                                context.getHttpClient().close();
+                                context.closeHttpClient();
                             }
                         };
                         final JsonObject jsonObject = new JsonObject();
@@ -141,7 +142,7 @@ public class DefaultProxyMiddleware implements ProxyMiddleware {
             public void handle(Throwable throwable) {
                 ProxyService proxyService = new ProxyService();
                 proxyService.sendError(request, throwable);
-                context.getHttpClient().close();
+                context.closeHttpClient();
             }
         });
 
