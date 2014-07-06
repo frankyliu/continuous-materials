@@ -16,7 +16,6 @@ public class ProxyService {
     private static final Logger LOG = LoggerFactory.getLogger(ProxyService.class);
 
     public void sendError(HttpServerRequest request, Throwable throwable) {
-        LOG.error("The routeMatcher throw an error", throwable);
         LOG.error("Severe error during request processing :", throwable);
         request.response().setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code());
         throwable.printStackTrace();
