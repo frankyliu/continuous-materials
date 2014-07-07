@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class MutltiGETHandler implements Handler<HttpServerRequest> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MutltiGETHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(MutltiGETHandler.class);
 
     private final Vertx vertx;
     private final RepositoryScanner repositoryScanner;
@@ -34,7 +34,7 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
         this.vertx = vertx;
 
         if (repos == null || repos.size() == 0) {
-            throw new IllegalArgumentException("repos");
+            throw new IllegalArgumentException("no repos configured");
         }
         this.repositoryScanner = new RepositoryScanner(repos);
         this.proxyPath = proxyPath;
@@ -55,7 +55,7 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
             return;
         }
 
-        LOG.info("Trying to download " + request.path() + "from " + repositoryScanner.getRepoFromIndex(repoIndex));
+        logger.info("Trying to download " + request.path() + " from " + repositoryScanner.getRepoFromIndex(repoIndex));
 
         final HttpEndpointInfo httpEndpointInfo = repositoryScanner.getRepoFromIndex(repoIndex);
 
@@ -98,6 +98,7 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
                                 }
                             });
                         } else {
+                            logger.info("found  " + request.path() + " in " + repositoryScanner.getRepoFromIndex(repoIndex));
                             ProxyService proxyService = new ProxyService();
                             HttpClientRequest getClientRequest = proxyService.getClientRequest(context, new DefaultClientResponseHandler(context).get());
                             getClientRequest.headers().set(request.headers());
