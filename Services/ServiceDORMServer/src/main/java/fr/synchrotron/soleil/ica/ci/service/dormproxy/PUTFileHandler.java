@@ -4,6 +4,8 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import org.vertx.java.core.*;
 import org.vertx.java.core.file.AsyncFile;
 import org.vertx.java.core.http.HttpServerRequest;
+import org.vertx.java.core.logging.Logger;
+import org.vertx.java.core.logging.impl.LoggerFactory;
 import org.vertx.java.core.streams.Pump;
 
 import java.io.File;
@@ -12,7 +14,7 @@ import java.io.File;
  * @author Gregory Boissinot
  */
 public class PUTFileHandler implements Handler<HttpServerRequest> {
-
+    private  final Logger logger = LoggerFactory.getLogger(PUTFileHandler.class);
     private final Vertx vertx;
     private final String fsRepositoryRootDir;
     private final String proxyPath;
@@ -27,7 +29,7 @@ public class PUTFileHandler implements Handler<HttpServerRequest> {
     public void handle(final HttpServerRequest request) {
 
         final String path = request.path();
-        System.out.println("PUT" + path);
+        logger.debug("archiving "+ path);
 
         String artifactPath = path.substring(proxyPath.length() + 1);
 
@@ -108,9 +110,12 @@ public class PUTFileHandler implements Handler<HttpServerRequest> {
                                 @Override
                                 public void handle(AsyncResult<Void> asyncResult) {
                                     if (asyncResult.succeeded()) {
+                                        logger.debug("archiving SUCCESS of "+ path);
                                         request.response().setStatusCode(HttpResponseStatus.NO_CONTENT.code());
                                         request.response().end();
                                     } else {
+                                        logger.error("archiving FAILED of "+ path);
+                                        logger.error("archiving FAILED trace ", asyncResult.cause());
                                         asyncResult.cause().printStackTrace(System.err);
                                     }
                                 }

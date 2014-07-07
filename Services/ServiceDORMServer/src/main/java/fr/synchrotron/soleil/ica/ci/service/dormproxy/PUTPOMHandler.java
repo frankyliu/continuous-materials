@@ -15,7 +15,7 @@ import org.vertx.java.core.logging.impl.LoggerFactory;
  */
 public class PUTPOMHandler implements Handler<HttpServerRequest> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PUTPOMHandler.class);
+    private  final Logger logger = LoggerFactory.getLogger(PUTPOMHandler.class);
 
     private Vertx vertx;
 
@@ -27,7 +27,7 @@ public class PUTPOMHandler implements Handler<HttpServerRequest> {
     public void handle(final HttpServerRequest request) {
 
         String path = request.path();
-        System.out.println("PUT POM" + path);
+        logger.debug("archiving pom "+ path);
 
         final Buffer body = new Buffer();
         request.dataHandler(new Handler<Buffer>() {
@@ -60,9 +60,11 @@ public class PUTPOMHandler implements Handler<HttpServerRequest> {
                                 if (asyncResult.succeeded()) {
                                     request.response().setStatusCode(HttpResponseStatus.NO_CONTENT.code());
                                     request.response().end();
+                                    logger.debug(request.path() + "archiving with SUCCESS");
                                 } else {
                                     asyncResult.cause().printStackTrace();
-                                    LOG.error(asyncResult.cause().getMessage());
+                                    logger.error(request.path() + "archiving FAILED");
+                                    logger.error(asyncResult.cause().getMessage());
                                     request.response().setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code());
                                     request.response().setStatusMessage(asyncResult.cause().getMessage());
                                     request.response().end();
