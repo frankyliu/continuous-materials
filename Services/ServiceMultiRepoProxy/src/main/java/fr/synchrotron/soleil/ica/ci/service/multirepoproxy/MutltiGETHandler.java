@@ -100,11 +100,11 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
                         } else {
                             logger.info("found  " + request.path() + " in " + repositoryScanner.getRepoFromIndex(repoIndex));
                             ProxyService proxyService = new ProxyService();
-                            HttpClientRequest getClientRequest = proxyService.getClientRequest(context, new DefaultClientResponseHandler(context).get());
+                            final Handler<HttpClientResponse> clientResponseHandler = new DefaultClientResponseHandler(context).get();
+                            HttpClientRequest getClientRequest = proxyService.getClientRequest(context, clientResponseHandler);
                             getClientRequest.headers().set(request.headers());
                             getClientRequest.exceptionHandler(exceptionHandler);
                             getClientRequest.end();
-                            httpClient.close();
                         }
                         break;
                     case 301:
