@@ -35,7 +35,12 @@ public class ProxyService {
         HttpClientRequest clientRequest;
         switch (request.method()) {
             case "HEAD":
-                clientRequest = httpClient.head(clientRequestPath, clientResponseHandler);
+                final ProxyRequestType requestType = context.getRequestType();
+                if (ProxyRequestType.PON.equals(requestType)) {
+                    clientRequest = httpClient.get(clientRequestPath, clientResponseHandler);
+                } else {
+                    clientRequest = httpClient.head(clientRequestPath, clientResponseHandler);
+                }
                 break;
             case "GET":
                 clientRequest = httpClient.get(clientRequestPath, clientResponseHandler);

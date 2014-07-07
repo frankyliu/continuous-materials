@@ -31,20 +31,18 @@ public class DefaultProxyMiddleware implements ProxyMiddleware {
         final String clientRequestPath = context.getClientRequestPath();
         final HttpServerRequest request = context.getHttpServerRequest();
 
-        switch (requestType) {
-            case POMSHA1:
-                final Vertx vertx = context.getVertx();
-                final POMCache pomCache = new POMCache(vertx);
-                final String sha1 = pomCache.getSha1(clientRequestPath);
-                if (sha1 != null) {
-                    request.response().setStatusCode(HttpResponseStatus.OK.code());
-                    request.response().putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(sha1.getBytes().length));
-                    request.response().end(sha1);
-                    break;
-                }
-            default:
-                makePullRequestAndRespond(context);
+        if (ProxyRequestType.POMSHA1.equals(requestType)) {
+            final Vertx vertx = context.getVertx();
+            final POMCache pomCache = new POMCache(vertx);
+            final String sha1 = pomCache.getSha1(clientRequestPath);
+            if (sha1 != null) {
+                request.response().setStatusCode(HttpResponseStatus.OK.code());
+                request.response().putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(sha1.getBytes().length));
+                request.response().end(sha1);
+                return;
+            }
         }
+        makePullRequestAndRespond(context);
     }
 
     private void makePullRequestAndRespond(final MiddlewareContext context) {

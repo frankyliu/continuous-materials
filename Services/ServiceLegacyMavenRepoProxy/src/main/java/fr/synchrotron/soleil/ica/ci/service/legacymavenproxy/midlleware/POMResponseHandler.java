@@ -76,8 +76,11 @@ public class POMResponseHandler extends DefaultClientResponseHandler {
             request.response().putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(messagePayload.getBytes().length));
             ProxyService proxyService = new ProxyService();
             proxyService.fixWarningCookieDomain(context, clientResponse);
-            request.response().end(messagePayload);
-            return;
+
+            if (!"HEAD".equals(request.method())) {
+                request.response().write(messagePayload);
+            }
+            request.response().end();
         }
 
         final MessageFilterService messageFilterService = messageFilterServiceList.get(0);
