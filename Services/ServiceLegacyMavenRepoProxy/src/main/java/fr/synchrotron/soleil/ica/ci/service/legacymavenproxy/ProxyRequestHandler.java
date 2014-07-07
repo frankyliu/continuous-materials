@@ -1,6 +1,5 @@
 package fr.synchrotron.soleil.ica.ci.service.legacymavenproxy;
 
-import com.sun.deploy.net.proxy.ProxyHandler;
 import fr.synchrotron.soleil.ica.ci.service.legacymavenproxy.midlleware.DefaultProxyMiddleware;
 import fr.synchrotron.soleil.ica.proxy.midlleware.*;
 import org.vertx.java.core.Handler;
