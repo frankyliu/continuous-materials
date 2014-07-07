@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class ProxyRequestHandler implements Handler<HttpServerRequest> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProxyHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ProxyRequestHandler.class);
 
     private final Vertx vertx;
 
