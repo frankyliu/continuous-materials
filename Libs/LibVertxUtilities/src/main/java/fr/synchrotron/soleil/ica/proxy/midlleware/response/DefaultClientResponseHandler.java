@@ -38,7 +38,6 @@ public class DefaultClientResponseHandler implements ClientResponseHandler {
                 request.response().setStatusCode(statusCode);
                 request.response().setStatusMessage(clientResponse.statusMessage());
                 request.response().headers().set(clientResponse.headers());
-                //request.response().setChunked(true);
                 ProxyService proxyService = new ProxyService();
                 proxyService.fixWarningCookieDomain(context, clientResponse);
                 clientResponse.endHandler(new Handler<Void>() {
