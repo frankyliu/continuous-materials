@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class MutltiGETHandler implements Handler<HttpServerRequest> {
 
-    private final Logger logger = LoggerFactory.getLogger(MutltiGETHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MutltiGETHandler.class);
 
     private final Vertx vertx;
     private final RepositoryScanner repositoryScanner;
@@ -55,7 +55,7 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
             return;
         }
 
-        logger.info(request.method() + " " + request.path() + " from " + repositoryScanner.getRepoFromIndex(repoIndex));
+        LOGGER.info(request.method() + " " + request.path() + " from " + repositoryScanner.getRepoFromIndex(repoIndex));
 
         final HttpEndpointInfo httpEndpointInfo = repositoryScanner.getRepoFromIndex(repoIndex);
 
@@ -86,7 +86,8 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
             @Override
             public void handle(HttpClientResponse clientResponse) {
 
-                switch (clientResponse.statusCode()) {
+                final int statusCode = clientResponse.statusCode();
+                switch (statusCode) {
                     case 200:
                         if ("HEAD".equals(request.method())) {
                             request.response().setStatusCode(clientResponse.statusCode());
@@ -98,7 +99,7 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
                                 }
                             });
                         } else {
-                            logger.info("found  " + request.path() + " in " + repositoryScanner.getRepoFromIndex(repoIndex));
+                            LOGGER.info("found  " + request.path() + " in " + repositoryScanner.getRepoFromIndex(repoIndex));
                             ProxyService proxyService = new ProxyService();
                             final Handler<HttpClientResponse> clientResponseHandler = new DefaultClientResponseHandler(context).get();
                             HttpClientRequest getClientRequest = proxyService.getClientRequest(context, clientResponseHandler);
@@ -109,14 +110,14 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
                         break;
                     case 301:
                     case 404:
-                        //httpClient.close();
+                        httpClient.close();
                         processRepository(request, repositoryScanner.getNextIndex(repoIndex));
                         break;
                     default:
                         request.response().setStatusCode(clientResponse.statusCode());
                         request.response().setStatusMessage(clientResponse.statusMessage());
                         request.response().end();
-                        httpClient.close();
+                        //httpClient.close();
                         break;
                 }
             }
