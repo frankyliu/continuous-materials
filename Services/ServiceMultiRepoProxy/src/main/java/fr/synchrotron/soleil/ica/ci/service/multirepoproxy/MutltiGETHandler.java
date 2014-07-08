@@ -55,7 +55,7 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
             return;
         }
 
-        logger.info("Trying to download " + request.path() + " from " + repositoryScanner.getRepoFromIndex(repoIndex));
+        logger.info(request.method() + " " + request.path() + " from " + repositoryScanner.getRepoFromIndex(repoIndex));
 
         final HttpEndpointInfo httpEndpointInfo = repositoryScanner.getRepoFromIndex(repoIndex);
 
@@ -109,7 +109,7 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
                         break;
                     case 301:
                     case 404:
-                        httpClient.close();
+                        //httpClient.close();
                         processRepository(request, repositoryScanner.getNextIndex(repoIndex));
                         break;
                     default:
