@@ -81,6 +81,7 @@ public class POMResponseHandler extends DefaultClientResponseHandler {
                 request.response().write(messagePayload);
             }
             request.response().end();
+            return;
         }
 
         final MessageFilterService messageFilterService = messageFilterServiceList.get(0);
