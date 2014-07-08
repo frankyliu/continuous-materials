@@ -8,16 +8,15 @@ import fr.synchrotron.soleil.ica.proxy.midlleware.ProxyService;
 import fr.synchrotron.soleil.ica.proxy.midlleware.response.DefaultClientResponseHandler;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.vertx.java.core.Handler;
+import org.vertx.java.core.MultiMap;
 import org.vertx.java.core.Vertx;
-import org.vertx.java.core.http.HttpClient;
-import org.vertx.java.core.http.HttpClientRequest;
-import org.vertx.java.core.http.HttpClientResponse;
-import org.vertx.java.core.http.HttpServerRequest;
+import org.vertx.java.core.http.*;
 import org.vertx.java.core.logging.Logger;
 import org.vertx.java.core.logging.impl.LoggerFactory;
 
 import java.nio.channels.UnresolvedAddressException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Gregory Boissinot
@@ -42,7 +41,20 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
 
     @Override
     public void handle(final HttpServerRequest request) {
+        cleanRequestHttpHeaders(request);
         processRepository(request, 0);
+    }
+
+    private void cleanRequestHttpHeaders(HttpServerRequest request) {
+        final MultiMap headers = request.headers();
+        for (Map.Entry<String, String> header : headers) {
+            String headerValue = header.getValue();
+            if (headerValue == null) {
+                headers.remove(header.getKey());
+            }
+        }
+        headers.remove(HttpHeaders.KEEP_ALIVE);
+        headers.remove(HttpHeaders.CONNECTION);  //not necessary with keepAlive to false from clients
     }
 
     private void processRepository(final HttpServerRequest request,
@@ -92,6 +104,8 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
                         if ("HEAD".equals(request.method())) {
                             request.response().setStatusCode(clientResponse.statusCode());
                             request.response().headers().set(clientResponse.headers());
+                            ProxyService proxyService = new ProxyService();
+                            proxyService.fixWarningCookieDomain(context, clientResponse);
                             clientResponse.endHandler(new Handler<Void>() {
                                 public void handle(Void event) {
                                     request.response().end();
@@ -99,13 +113,7 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
                                 }
                             });
                         } else {
-                            LOGGER.info("found  " + request.path() + " in " + repositoryScanner.getRepoFromIndex(repoIndex));
-                            ProxyService proxyService = new ProxyService();
-                            final Handler<HttpClientResponse> clientResponseHandler = new DefaultClientResponseHandler(context).get();
-                            HttpClientRequest getClientRequest = proxyService.getClientRequest(context, clientResponseHandler);
-                            getClientRequest.headers().set(request.headers());
-                            getClientRequest.exceptionHandler(exceptionHandler);
-                            getClientRequest.end();
+                            makeGetRequest();
                         }
                         break;
                     case 301:
@@ -117,9 +125,21 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
                         request.response().setStatusCode(clientResponse.statusCode());
                         request.response().setStatusMessage(clientResponse.statusMessage());
                         request.response().end();
-                        //httpClient.close();
+                        httpClient.close();
                         break;
                 }
+            }
+
+            private void makeGetRequest() {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Found  " + request.path() + " in " + repositoryScanner.getRepoFromIndex(repoIndex) + ". Make a Get Request");
+                }
+                ProxyService proxyService = new ProxyService();
+                final Handler<HttpClientResponse> clientResponseHandler = new DefaultClientResponseHandler(context).get();
+                HttpClientRequest getClientRequest = proxyService.getClientRequest(context, clientResponseHandler);
+                getClientRequest.headers().set(request.headers());
+                getClientRequest.exceptionHandler(exceptionHandler);
+                getClientRequest.end();
             }
         });
 
