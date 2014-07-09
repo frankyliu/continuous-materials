@@ -14,6 +14,8 @@ import org.vertx.java.core.http.HttpClientResponse;
 import org.vertx.java.core.http.HttpHeaders;
 import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.json.JsonObject;
+import org.vertx.java.core.logging.Logger;
+import org.vertx.java.core.logging.impl.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,8 @@ import java.util.List;
  */
 public class POMResponseHandler extends DefaultClientResponseHandler {
 
+    private static final Logger LOG = LoggerFactory.getLogger(POMResponseHandler.class);
+
     public POMResponseHandler(MiddlewareContext context) {
         super(context);
     }
@@ -31,7 +35,6 @@ public class POMResponseHandler extends DefaultClientResponseHandler {
     public Handler<HttpClientResponse> get() {
 
         final String clientRequestPath = context.getClientRequestPath();
-
         final List<MessageFilterService> bodyClientResponseFilters = new ArrayList<>();
         bodyClientResponseFilters.add(new MessageFilterService(ServiceAddressRegistry.EB_ADDRESS_POMMETADATA_SERVICE, "fixWrongValue"));
         bodyClientResponseFilters.add(new MessageFilterService(ServiceAddressRegistry.EB_ADDRESS_POMMETADATA_SERVICE, "cache"));
@@ -40,14 +43,19 @@ public class POMResponseHandler extends DefaultClientResponseHandler {
             public void handle(final HttpClientResponse clientResponse) {
 
                 final int statusCode = clientResponse.statusCode();
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug(String.format("Returned endpoint status code: %s", statusCode));
+                }
+
                 switch (statusCode) {
                     case 200:
                         processPomContent(clientResponse);
                         break;
+                    case 404:
+                        sendResponseWithoutTransferEncoding(clientResponse);
+                        break;
                     default:
-                        final HttpServerRequest request = context.getHttpServerRequest();
-                        request.response().setStatusCode(statusCode);
-                        request.response().end();
+                        sendPassThroughResponseWithoutContent(clientResponse);
                         break;
                 }
             }
@@ -71,9 +79,30 @@ public class POMResponseHandler extends DefaultClientResponseHandler {
                     }
                 });
             }
+
+            private void sendResponseWithoutTransferEncoding(final HttpClientResponse clientResponse) {
+                final HttpServerRequest request = context.getHttpServerRequest();
+                request.response().setStatusCode(clientResponse.statusCode());
+                request.response().setStatusMessage(clientResponse.statusMessage());
+                request.response().headers().set(clientResponse.headers());
+                request.response().headers().remove(HttpHeaders.TRANSFER_ENCODING);
+                ProxyService proxyService = new ProxyService();
+                proxyService.fixWarningCookieDomain(context, clientResponse);
+                endRequest();
+            }
+
+            private void sendPassThroughResponseWithoutContent(final HttpClientResponse clientResponse) {
+                final HttpServerRequest request = context.getHttpServerRequest();
+                request.response().setStatusCode(clientResponse.statusCode());
+                request.response().setStatusMessage(clientResponse.statusMessage());
+                request.response().headers().set(clientResponse.headers());
+                ProxyService proxyService = new ProxyService();
+                proxyService.fixWarningCookieDomain(context, clientResponse);
+                endRequest();
+            }
+
         };
     }
-
 
     private void applyClientResponseFiltersAndRespond(
             final HttpClientResponse clientResponse,
@@ -82,7 +111,6 @@ public class POMResponseHandler extends DefaultClientResponseHandler {
 
         final HttpServerRequest request = context.getHttpServerRequest();
         final Vertx vertx = context.getVertx();
-
         final String messagePayload = jsonObjectMessage.getString("content");
 
         if (messageFilterServiceList.size() == 0) {
@@ -96,7 +124,8 @@ public class POMResponseHandler extends DefaultClientResponseHandler {
             if (!"HEAD".equals(request.method())) {
                 request.response().write(messagePayload);
             }
-            request.response().end();
+
+            endRequest();
             return;
         }
 
@@ -114,11 +143,15 @@ public class POMResponseHandler extends DefaultClientResponseHandler {
                         throwable.printStackTrace();
                         request.response().setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code());
                         request.response().setStatusMessage(throwable.getMessage());
+                        request.response().headers().set(clientResponse.headers());
+                        ProxyService proxyService = new ProxyService();
+                        proxyService.fixWarningCookieDomain(context, clientResponse);
                         request.response().end();
                     }
                 }
             }
         };
+
         MessagingTemplate
                 .address(vertx.eventBus(), messageFilterService.getAddress())
                 .action(messageFilterService.getAction())
