@@ -6,6 +6,7 @@ import fr.synchrotron.soleil.ica.ci.service.legacymavenproxy.ServiceAddressRegis
 import fr.synchrotron.soleil.ica.proxy.midlleware.MiddlewareContext;
 import fr.synchrotron.soleil.ica.proxy.midlleware.ProxyService;
 import fr.synchrotron.soleil.ica.proxy.midlleware.response.DefaultClientResponseHandler;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import org.vertx.java.core.*;
 import org.vertx.java.core.buffer.Buffer;
 import org.vertx.java.core.eventbus.Message;
@@ -93,7 +94,13 @@ public class POMResponseHandler extends DefaultClientResponseHandler {
                     jsonObjectMessage.putString("content", asyncResult.result().body());
                     applyClientResponseFiltersAndRespond(clientResponse, messageFilterServiceList, jsonObjectMessage);
                 } else {
-                    throw new RuntimeException(asyncResult.cause());
+                    final Throwable throwable = asyncResult.cause();
+                    if (throwable != null) {
+                        throwable.printStackTrace();
+                        request.response().setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code());
+                        request.response().setStatusMessage(throwable.getMessage());
+                        request.response().end();
+                    }
                 }
             }
         };
