@@ -38,6 +38,21 @@ public class POMResponseHandler extends DefaultClientResponseHandler {
         return new Handler<HttpClientResponse>() {
             @Override
             public void handle(final HttpClientResponse clientResponse) {
+
+                final int statusCode = clientResponse.statusCode();
+                switch (statusCode) {
+                    case 200:
+                        processPomContent(clientResponse);
+                        break;
+                    default:
+                        final HttpServerRequest request = context.getHttpServerRequest();
+                        request.response().setStatusCode(statusCode);
+                        request.response().end();
+                        break;
+                }
+            }
+
+            private void processPomContent(final HttpClientResponse clientResponse) {
                 final Buffer clientRepsonseBody = new Buffer();
                 clientResponse.dataHandler(new Handler<Buffer>() {
                     @Override
