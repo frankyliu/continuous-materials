@@ -8,6 +8,7 @@ import org.vertx.java.core.Handler;
 import org.vertx.java.core.Vertx;
 import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.eventbus.ReplyException;
+import org.vertx.java.core.http.HttpHeaders;
 import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.json.JsonObject;
 
@@ -29,7 +30,8 @@ public class GETPOMHandler implements Handler<HttpServerRequest> {
     public void handle(final HttpServerRequest request) {
 
         final String path = request.path();
-        System.out.println("GET" + path);
+        final String method = request.method();
+        System.out.println(method + " " + path);
 
         QueryObjectService queryObjectService = new QueryObjectService();
         final String queryPath = extractPomPath(path);
@@ -42,7 +44,12 @@ public class GETPOMHandler implements Handler<HttpServerRequest> {
                 if (asyncResult.succeeded()) {
                     String pomContent = asyncResult.result().body();
                     request.response().setStatusCode(HttpResponseStatus.OK.code());
-                    request.response().end(pomContent);
+                    request.response().putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(pomContent.getBytes().length));
+                    if ("HEAD".equals(method)) {
+                        request.response().end();
+                    } else {
+                        request.response().end(pomContent);
+                    }
                 } else {
 
                     if (asyncResult.cause() instanceof ReplyException) {

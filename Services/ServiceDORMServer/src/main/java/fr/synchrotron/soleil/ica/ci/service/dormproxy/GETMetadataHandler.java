@@ -12,8 +12,9 @@ public class GETMetadataHandler implements Handler<HttpServerRequest> {
     @Override
     public void handle(HttpServerRequest request) {
 
-        String path = request.path();
-        System.out.println("GET " + path);
+        final String path = request.path();
+        final String method = request.method();
+        System.out.println(method + " " + path);
 
         request.response().setStatusCode(HttpResponseStatus.NOT_FOUND.code());
         request.response().end();

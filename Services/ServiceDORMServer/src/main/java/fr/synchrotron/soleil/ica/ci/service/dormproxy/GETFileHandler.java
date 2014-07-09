@@ -28,8 +28,8 @@ public class GETFileHandler implements Handler<HttpServerRequest> {
     public void handle(final HttpServerRequest request) {
 
         final String path = request.path();
-        System.out.println("GET" + path);
-
+        final String method = request.method();
+        System.out.println(method + " " + path);
 
         String artifactPath = path.substring(proxyPath.length() + 1);
 
@@ -46,9 +46,11 @@ public class GETFileHandler implements Handler<HttpServerRequest> {
                         public void handle(AsyncResult<AsyncFile> ar) {
                             if (ar.succeeded()) {
                                 AsyncFile asyncFile = ar.result();
-                                request.response().setChunked(true);
                                 request.response().putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(getterFile.length()));
-                                Pump.createPump(asyncFile, request.response()).start();
+                                if ("GET".equals(method)) {
+                                    request.response().setChunked(true);
+                                    Pump.createPump(asyncFile, request.response()).start();
+                                }
                                 asyncFile.endHandler(new VoidHandler() {
                                     public void handle() {
                                         request.response().end();

@@ -8,6 +8,7 @@ import org.vertx.java.core.json.JsonObject;
 public class QueryObjectService {
 
     //sample: orgPart1/orgPart2/orgPart3/name/version/name-version.pom
+    //TODO Check validation Maven name (check name for example)
     public JsonObject getMavenQueryObject(String queryPath) {
 
         JsonObject queryObject = new JsonObject();

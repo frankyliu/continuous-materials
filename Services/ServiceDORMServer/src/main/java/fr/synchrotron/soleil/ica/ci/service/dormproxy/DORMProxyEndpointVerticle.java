@@ -41,6 +41,9 @@ public class DORMProxyEndpointVerticle extends BusModBase {
         routeMatcher.getWithRegEx(proxyPath + "/.*.pom", new GETPOMHandler(vertx, proxyPath));
         routeMatcher.getWithRegEx(proxyPath + "/.*", new GETFileHandler(vertx, fsRepositoryRootDir, proxyPath));
 
+        routeMatcher.headWithRegEx(proxyPath + "/.*/maven-metadata.xml", new GETMetadataHandler());
+        routeMatcher.headWithRegEx(proxyPath + "/.*.pom", new GETPOMHandler(vertx, proxyPath));
+        routeMatcher.headWithRegEx(proxyPath + "/.*", new GETFileHandler(vertx, fsRepositoryRootDir, proxyPath));
 
         routeMatcher.allWithRegEx(proxyPath + "/.*", new Handler<HttpServerRequest>() {
             @Override
