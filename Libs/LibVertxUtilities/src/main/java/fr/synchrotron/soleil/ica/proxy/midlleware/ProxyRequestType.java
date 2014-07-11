@@ -5,7 +5,7 @@ package fr.synchrotron.soleil.ica.proxy.midlleware;
  */
 public enum ProxyRequestType {
 
-    PON,
+    POM,
     POMSHA1,
     ANY;
 }

@@ -11,12 +11,14 @@ import org.vertx.java.core.eventbus.ReplyException;
 import org.vertx.java.core.http.HttpHeaders;
 import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.json.JsonObject;
+import org.vertx.java.core.logging.Logger;
+import org.vertx.java.core.logging.impl.LoggerFactory;
 
 /**
  * @author Gregory Boissinot
  */
 public class GETPOMHandler implements Handler<HttpServerRequest> {
-
+    private  final Logger logger = LoggerFactory.getLogger(GETPOMHandler.class);
     private Vertx vertx;
 
     private String proxyPrefix;
@@ -31,7 +33,8 @@ public class GETPOMHandler implements Handler<HttpServerRequest> {
 
         final String path = request.path();
         final String method = request.method();
-        System.out.println(method + " " + path);
+     //   System.out.println(method + " " + path);
+        logger.debug(method + " " + path);
 
         QueryObjectService queryObjectService = new QueryObjectService();
         final String queryPath = extractPomPath(path);
@@ -63,6 +66,7 @@ public class GETPOMHandler implements Handler<HttpServerRequest> {
                         request.response().setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code());
                         final Throwable cause = asyncResult.cause();
                         if (cause != null && cause.getMessage() != null) {
+                            logger.error("error", cause);
                             request.response().setStatusMessage(cause.getMessage());
                         }
                         request.response().end();

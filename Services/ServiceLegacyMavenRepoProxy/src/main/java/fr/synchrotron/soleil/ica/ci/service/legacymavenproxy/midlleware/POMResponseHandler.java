@@ -140,6 +140,7 @@ public class POMResponseHandler extends DefaultClientResponseHandler {
                 } else {
                     final Throwable throwable = asyncResult.cause();
                     if (throwable != null) {
+                        LOG.error("error", throwable);
                         throwable.printStackTrace();
                         request.response().setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code());
                         request.response().setStatusMessage(throwable.getMessage());

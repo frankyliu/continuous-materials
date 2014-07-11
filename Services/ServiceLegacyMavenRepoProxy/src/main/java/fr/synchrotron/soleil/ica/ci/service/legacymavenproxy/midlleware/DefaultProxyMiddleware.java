@@ -53,7 +53,7 @@ public class DefaultProxyMiddleware implements ProxyMiddleware {
 
         HttpClientRequest clientRequest;
         switch (requestType) {
-            case PON:
+            case POM:
                 clientRequest = proxyService.getClientRequest(context, new POMResponseHandler(context).get());
                 break;
             case ANY:
@@ -67,6 +67,7 @@ public class DefaultProxyMiddleware implements ProxyMiddleware {
         clientRequest.exceptionHandler(new Handler<Throwable>() {
             @Override
             public void handle(Throwable throwable) {
+                LOG.error("error", throwable);
                 ProxyService proxyService = new ProxyService();
                 proxyService.sendError(request, throwable);
                 context.getHttpClient().close();
@@ -79,7 +80,7 @@ public class DefaultProxyMiddleware implements ProxyMiddleware {
     public void push(MiddlewareContext context) {
         final ProxyRequestType requestType = context.getRequestType();
         switch (requestType) {
-            case PON:
+            case POM:
                 uploadPom(context);
                 break;
             case ANY:
@@ -139,6 +140,7 @@ public class DefaultProxyMiddleware implements ProxyMiddleware {
         vertxHttpClientRequest.exceptionHandler(new Handler<Throwable>() {
             @Override
             public void handle(Throwable throwable) {
+                LOG.error("error", throwable);
                 ProxyService proxyService = new ProxyService();
                 proxyService.sendError(request, throwable);
                 context.closeHttpClient();

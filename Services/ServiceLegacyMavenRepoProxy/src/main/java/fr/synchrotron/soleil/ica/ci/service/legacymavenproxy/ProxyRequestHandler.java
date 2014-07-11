@@ -53,6 +53,7 @@ public class ProxyRequestHandler implements Handler<HttpServerRequest> {
         final Handler<Throwable> exceptionHandler = new Handler<Throwable>() {
             @Override
             public void handle(Throwable throwable) {
+                LOG.error("error", throwable);
                 ProxyService proxyService = new ProxyService();
                 proxyService.sendError(request, throwable);
                 if (httpClient != null) {

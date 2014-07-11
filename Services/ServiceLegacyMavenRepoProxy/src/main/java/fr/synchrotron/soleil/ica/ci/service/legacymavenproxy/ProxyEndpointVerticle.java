@@ -64,7 +64,7 @@ public class ProxyEndpointVerticle extends BusModBase {
 
         final HttpEndpointInfo httpEndpointInfo = new HttpEndpointInfo(repoHostGET, repoPortGET, repoURIPathGET);
 
-        final ProxyRequestHandler pomProxyRequestHandler = new ProxyRequestHandler(vertx, proxyPath, httpEndpointInfo, ProxyRequestType.PON);
+        final ProxyRequestHandler pomProxyRequestHandler = new ProxyRequestHandler(vertx, proxyPath, httpEndpointInfo, ProxyRequestType.POM);
         final ProxyRequestHandler pomSha1ProxyRequestHandler = new ProxyRequestHandler(vertx, proxyPath, httpEndpointInfo, ProxyRequestType.POMSHA1);
         final ProxyRequestHandler anyProxyRequestHandler = new ProxyRequestHandler(vertx, proxyPath, httpEndpointInfo, ProxyRequestType.ANY);
 
@@ -89,7 +89,7 @@ public class ProxyEndpointVerticle extends BusModBase {
 
         final HttpEndpointInfo httpEndpointInfo = new HttpEndpointInfo(repoHostPUT, repoPortPUT, repoURIPathPUT);
         routeMatcher
-                .putWithRegEx(proxyPath + "/.*.pom", new ProxyRequestHandler(vertx, proxyPath, httpEndpointInfo, ProxyRequestType.PON))
+                .putWithRegEx(proxyPath + "/.*.pom", new ProxyRequestHandler(vertx, proxyPath, httpEndpointInfo, ProxyRequestType.POM))
                 .putWithRegEx(proxyPath + "/.*", new ProxyRequestHandler(vertx, proxyPath, httpEndpointInfo, ProxyRequestType.ANY));
     }
 

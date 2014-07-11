@@ -82,6 +82,7 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
         final Handler<Throwable> exceptionHandler = new Handler<Throwable>() {
             @Override
             public void handle(Throwable throwable) {
+                LOGGER.error("error", throwable);
                 ProxyService proxyService = new ProxyService();
                 proxyService.sendError(request, throwable);
                 if (httpClient != null) {
@@ -146,6 +147,7 @@ public class MutltiGETHandler implements Handler<HttpServerRequest> {
         clientRequest.exceptionHandler(new Handler<Throwable>() {
             @Override
             public void handle(Throwable throwable) {
+                LOGGER.error("error", throwable);
                 if (isUnreasolvedHost(throwable)) {
                     processRepository(request, repositoryScanner.getNextIndex(repoIndex));
                 } else {

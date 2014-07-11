@@ -11,6 +11,8 @@ import org.vertx.java.busmods.BusModBase;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
+import org.vertx.java.core.logging.Logger;
+import org.vertx.java.core.logging.impl.LoggerFactory;
 
 import java.io.StringWriter;
 
@@ -18,7 +20,7 @@ import java.io.StringWriter;
  * @author Gregory Boissinot
  */
 public class POMMetadataWorkerVerticle extends BusModBase {
-
+    private  final Logger logger = LoggerFactory.getLogger(POMMetadataWorkerVerticle.class);
     private static final String ACTION_IMPORT = "import";
     private static final String ACTION_EXPORT = "export";
 
@@ -59,7 +61,8 @@ public class POMMetadataWorkerVerticle extends BusModBase {
             pomImportService.importPomFile(pomContent);
             message.reply(true);
         } catch (Throwable t) {
-            t.printStackTrace();
+            logger.error("error",t);
+          //  t.printStackTrace();
             message.fail(-1, t.getMessage());
         }
     }
@@ -82,9 +85,11 @@ public class POMMetadataWorkerVerticle extends BusModBase {
             pomExportService.exportPomFile(stringWriter, artifactDocumentKey);
             message.reply(stringWriter.toString());
         } catch (NoSuchElementException nse) {
+            logger.error("error", nse);
             message.fail(0, "Artifact doesn't exist.");
         } catch (Throwable t) {
-            t.printStackTrace();
+            logger.error("error",t);
+          // t.printStackTrace();
             message.fail(-1, t.getMessage());
         }
     }

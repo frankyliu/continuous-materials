@@ -36,7 +36,7 @@ public class ProxyService {
         switch (request.method()) {
             case "HEAD":
                 final ProxyRequestType requestType = context.getRequestType();
-                if (ProxyRequestType.PON.equals(requestType)) {
+                if (ProxyRequestType.POM.equals(requestType)) {
                     clientRequest = httpClient.get(clientRequestPath, clientResponseHandler);
                 } else {
                     clientRequest = httpClient.head(clientRequestPath, clientResponseHandler);
@@ -82,6 +82,7 @@ public class ProxyService {
         vertxHttpClientRequest.exceptionHandler(new Handler<Throwable>() {
             @Override
             public void handle(Throwable throwable) {
+                LOG.error("error", throwable);
                 ProxyService proxyService = new ProxyService();
                 proxyService.sendError(request, throwable);
                 httpClient.close();

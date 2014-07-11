@@ -1,12 +1,14 @@
 package fr.synchrotron.soleil.ica.ci.service.dormproxy;
 
 import org.vertx.java.core.json.JsonObject;
+import org.vertx.java.core.logging.Logger;
+import org.vertx.java.core.logging.impl.LoggerFactory;
 
 /**
  * @author Gregory Boissinot
  */
 public class QueryObjectService {
-
+    private  final Logger logger = LoggerFactory.getLogger(QueryObjectService.class);
     //sample: orgPart1/orgPart2/orgPart3/name/version/name-version.pom
     //TODO Check validation Maven name (check name for example)
     public JsonObject getMavenQueryObject(String queryPath) {
@@ -46,6 +48,7 @@ public class QueryObjectService {
         //Extract name
         final int endIndexName = queryArtifact.lastIndexOf("/");
         if (endIndexName == -1) {
+            logger.error(queryPath + " is not a valid pom query.");
             throw new IllegalStateException(queryPath + " is not a valid pom query.");
         }
         String name = queryArtifact.substring(endIndexName + 1);
