@@ -1,8 +1,8 @@
-package fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb;
+package fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.mongodb;
 
 
-import fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.MavenIndexerRetriever;
-import fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb.integration.MongoDBIntegrationService;
+import fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.MavenIndexerRetriever;
+import fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.mongodb.integration.MongoDBIntegrationService;
 import org.apache.maven.index.context.IndexingContext;
 
 /**

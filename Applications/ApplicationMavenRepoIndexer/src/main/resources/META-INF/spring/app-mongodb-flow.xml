@@ -45,7 +45,7 @@
             <!--mongodb-factory="mongoDbFactory"-->
             <!--collection-name="artifacts"/>-->
             <int:service-activator>
-                <bean class="fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb.MongoInsertion">
+                <bean class="fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.mongodb.MongoInsertion">
                 <constructor-arg ref="mongoTemplate"/>
                 </bean>
             </int:service-activator>
@@ -53,22 +53,22 @@
     <!--mongo-converter="mappingConverter"-->
 
     <bean id="artifactRouter"
-          class="fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb.integration.ArtifactLanguageRouter"/>
+          class="fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.mongodb.integration.ArtifactLanguageRouter"/>
 
     <bean id="artifactErrorLogger"
-          class="fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb.integration.ArtifactErrorLogger"/>
+          class="fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.mongodb.integration.ArtifactErrorLogger"/>
 
     <task:executor id="poolThreadMongoDB" pool-size="10"/>
 
     <bean id="primaryArtifactFilter"
-          class="fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb.integration.PrimaryArtifactFilter"/>
+          class="fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.mongodb.integration.PrimaryArtifactFilter"/>
     <bean id="thirdPartyArtifactEnricher"
-          class="fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb.integration.ThirdPartyArtifactEnricher"/>
+          class="fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.mongodb.integration.ThirdPartyArtifactEnricher"/>
 
     <bean id="cLanguageArtifactTransformer"
-          class="fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb.integration.CLanguageArtifactTransformer">
+          class="fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.mongodb.integration.CLanguageArtifactTransformer">
         <constructor-arg>
-            <bean class="fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.maven.artifact.c.ArtifactNameExtractor"/>
+            <bean class="fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.maven.artifact.c.ArtifactNameExtractor"/>
         </constructor-arg>
     </bean>
 

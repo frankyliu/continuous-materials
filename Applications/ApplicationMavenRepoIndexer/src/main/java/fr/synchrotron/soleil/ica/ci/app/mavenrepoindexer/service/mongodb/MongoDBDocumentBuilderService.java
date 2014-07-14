@@ -1,7 +1,7 @@
-package fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb;
+package fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.mongodb;
 
-import fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.domain.maven.MavenArtifactDocument;
-import fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.maven.MavenDocumentBuilderService;
+import fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.domain.maven.MavenArtifactDocument;
+import fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.maven.MavenDocumentBuilderService;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ArtifactDocument;
 import org.apache.maven.index.ArtifactInfo;
 

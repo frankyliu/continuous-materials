@@ -1,4 +1,4 @@
-package fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb.integration;
+package fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.mongodb.integration;
 
 import org.springframework.integration.annotation.Router;
 

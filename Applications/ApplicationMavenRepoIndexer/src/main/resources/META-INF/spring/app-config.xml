@@ -5,22 +5,22 @@
         http://www.springframework.org/schema/beans  http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="mavenDocumentBuilderService"
-          class="fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.maven.MavenDocumentBuilderService"/>
+          class="fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.maven.MavenDocumentBuilderService"/>
 
     <beans profile="mongodb">
-        <bean class="fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb.MongoImportService">
+        <bean class="fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.mongodb.MongoImportService">
             <constructor-arg name="mavenIndexerRetriever">
-                <bean class="fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.MavenIndexerRetriever"/>
+                <bean class="fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.MavenIndexerRetriever"/>
             </constructor-arg>
             <constructor-arg name="repoURLs" value="${repo.urls}"/>
             <constructor-arg name="mongoDBIntegrationService" ref="mongoDBIntegrationService"/>
         </bean>
 
         <bean id="mongoDBIntegrationService"
-              class="fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb.integration.MongoDBIntegrationService">
+              class="fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.mongodb.integration.MongoDBIntegrationService">
             <constructor-arg name="inputChannel" ref="workingMongoDBChannel"/>
             <constructor-arg name="builderService">
-                <bean class="fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb.MongoDBDocumentBuilderService">
+                <bean class="fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.mongodb.MongoDBDocumentBuilderService">
                     <constructor-arg name="mavenDocumentBuilderService" ref="mavenDocumentBuilderService"/>
                 </bean>
             </constructor-arg>

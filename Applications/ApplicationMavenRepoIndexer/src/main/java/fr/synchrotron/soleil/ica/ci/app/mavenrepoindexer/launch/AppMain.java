@@ -1,6 +1,6 @@
-package fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.launch;
+package fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.launch;
 
-import fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb.MongoImportService;
+import fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.mongodb.MongoImportService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**

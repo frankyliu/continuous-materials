@@ -1,4 +1,4 @@
-package fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.domain.maven;
+package fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.domain.maven;
 
 import java.util.Date;
 

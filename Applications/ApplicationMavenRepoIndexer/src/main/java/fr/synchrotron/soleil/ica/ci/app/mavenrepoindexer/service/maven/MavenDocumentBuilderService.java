@@ -1,7 +1,7 @@
-package fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.maven;
+package fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.maven;
 
-import fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.domain.maven.MavenArtifactDocument;
-import fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.domain.maven.MavenArtifactType;
+import fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.domain.maven.MavenArtifactDocument;
+import fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.domain.maven.MavenArtifactType;
 import org.apache.maven.index.ArtifactInfo;
 
 import java.util.Date;

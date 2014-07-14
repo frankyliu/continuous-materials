@@ -1,6 +1,6 @@
-package fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.maven.artifact.c;
+package fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.maven.artifact.c;
 
-import fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.domain.maven.MavenCNameElement;
+import fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.domain.maven.MavenCNameElement;
 
 /**
  * @author Gregory Boissinot

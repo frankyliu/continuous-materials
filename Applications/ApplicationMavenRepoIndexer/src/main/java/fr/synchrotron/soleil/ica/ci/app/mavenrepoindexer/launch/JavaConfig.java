@@ -1,4 +1,4 @@
-package fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.launch;
+package fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.launch;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;

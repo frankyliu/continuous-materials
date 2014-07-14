@@ -1,6 +1,6 @@
-package fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb.integration;
+package fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.mongodb.integration;
 
-import fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb.MongoDBDocumentBuilderService;
+import fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.mongodb.MongoDBDocumentBuilderService;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ArtifactDocument;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;

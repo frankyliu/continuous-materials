@@ -1,4 +1,4 @@
-package fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb;
+package fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.mongodb;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;

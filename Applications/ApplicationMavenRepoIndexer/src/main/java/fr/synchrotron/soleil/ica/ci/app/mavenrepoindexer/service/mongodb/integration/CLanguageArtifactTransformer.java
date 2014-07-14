@@ -1,7 +1,7 @@
-package fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb.integration;
+package fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.mongodb.integration;
 
-import fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.domain.maven.MavenCNameElement;
-import fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.maven.artifact.c.ArtifactNameExtractor;
+import fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.domain.maven.MavenCNameElement;
+import fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service.maven.artifact.c.ArtifactNameExtractor;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ArtifactDocument;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ext.ArtifactDocumentForC;
 import org.springframework.integration.annotation.Transformer;

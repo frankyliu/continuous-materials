@@ -1,4 +1,4 @@
-package fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service;
+package fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.service;
 
 import org.apache.maven.index.Indexer;
 import org.apache.maven.index.context.IndexCreator;
