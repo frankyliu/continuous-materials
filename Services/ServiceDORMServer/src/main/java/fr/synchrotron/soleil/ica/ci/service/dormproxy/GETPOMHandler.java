@@ -1,6 +1,7 @@
 package fr.synchrotron.soleil.ica.ci.service.dormproxy;
 
 import com.github.ebx.core.MessagingTemplate;
+import fr.synchrotron.soleil.ica.ci.lib.workflow.DefaultWorkflow;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.vertx.java.core.AsyncResult;
 import org.vertx.java.core.AsyncResultHandler;
@@ -18,7 +19,7 @@ import org.vertx.java.core.logging.impl.LoggerFactory;
  * @author Gregory Boissinot
  */
 public class GETPOMHandler implements Handler<HttpServerRequest> {
-    private  final Logger logger = LoggerFactory.getLogger(GETPOMHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(GETPOMHandler.class);
     private Vertx vertx;
 
     private String proxyPrefix;
@@ -33,12 +34,12 @@ public class GETPOMHandler implements Handler<HttpServerRequest> {
 
         final String path = request.path();
         final String method = request.method();
-     //   System.out.println(method + " " + path);
+        //   System.out.println(method + " " + path);
         logger.debug(method + " " + path);
 
         QueryObjectService queryObjectService = new QueryObjectService();
         final String queryPath = extractPomPath(path);
-        JsonObject pomQuery = queryObjectService.getMavenQueryObject(queryPath);
+        JsonObject pomQuery = queryObjectService.getMavenQueryObject(queryPath, new DefaultWorkflow());
         MessagingTemplate.address(vertx.eventBus(), ServiceAddressRegistry.EB_ADDRESS_POMIMPORT_SERVICE)
                 .content(pomQuery)
                 .action("export").send(new AsyncResultHandler<Message<String>>() {

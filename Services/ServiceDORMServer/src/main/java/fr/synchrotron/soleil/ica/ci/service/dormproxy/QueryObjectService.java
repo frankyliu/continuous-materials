@@ -1,5 +1,7 @@
 package fr.synchrotron.soleil.ica.ci.service.dormproxy;
 
+import fr.synchrotron.soleil.ica.ci.lib.workflow.StatusVersion;
+import fr.synchrotron.soleil.ica.ci.lib.workflow.Workflow;
 import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.core.logging.Logger;
 import org.vertx.java.core.logging.impl.LoggerFactory;
@@ -8,10 +10,11 @@ import org.vertx.java.core.logging.impl.LoggerFactory;
  * @author Gregory Boissinot
  */
 public class QueryObjectService {
-    private  final Logger logger = LoggerFactory.getLogger(QueryObjectService.class);
+    private final Logger logger = LoggerFactory.getLogger(QueryObjectService.class);
+
     //sample: orgPart1/orgPart2/orgPart3/name/version/name-version.pom
     //TODO Check validation Maven name (check name for example)
-    public JsonObject getMavenQueryObject(String queryPath) {
+    public JsonObject getMavenQueryObject(String queryPath, Workflow workflow) {
 
         JsonObject queryObject = new JsonObject();
 
@@ -22,26 +25,30 @@ public class QueryObjectService {
         }
         String queryArtifact = queryPath.substring(0, endIndex);
 
-        //Extract version
+        //Extract requested version
         final int endIndexVersion = queryArtifact.lastIndexOf("/");
         if (endIndexVersion == -1) {
             throw new IllegalStateException(queryPath + " is not a valid pom query.");
         }
         String version = queryArtifact.substring(endIndexVersion + 1);
-        String status;
-        //TODO Use service lib
-        if (version.endsWith("-SNAPSHOT")) {
-            status = "INTEGRATION";
-            version = version.substring(0, version.indexOf("-SNAPSHOT"));
-        } else if (version.endsWith("RELEASE")) {
-            status = "RELEASE";
-            version = version.substring(0, version.lastIndexOf("."));
-        } else if (version.endsWith("INTEGRATION")) {
-            status = "INTEGRATION";
-            version = version.substring(0, version.lastIndexOf("."));
-        } else {
-            status = "RELEASE";
-        }
+
+//        String status;
+//        //TODO Use service lib
+//        if (version.endsWith("-SNAPSHOT")) {
+//            status = "INTEGRATION";
+//            version = version.substring(0, version.indexOf("-SNAPSHOT"));
+//        } else if (version.endsWith("RELEASE")) {
+//            status = "RELEASE";
+//            version = version.substring(0, version.lastIndexOf("."));
+//        } else if (version.endsWith("INTEGRATION")) {
+//            status = "INTEGRATION";
+//            version = version.substring(0, version.lastIndexOf("."));
+//        } else {
+//            status = "RELEASE";
+//        }
+
+        final StatusVersion statusVersion = workflow.extractStatusAndVersionFromMavenVersion(version);
+
         queryArtifact = queryArtifact.substring(0, endIndexVersion);
 
 
@@ -59,8 +66,8 @@ public class QueryObjectService {
 
         queryObject.putString("org", org);
         queryObject.putString("name", name);
-        queryObject.putString("version", version);
-        queryObject.putString("status", status);
+        queryObject.putString("version", statusVersion.version);
+        queryObject.putString("status", statusVersion.status);
         return queryObject;
     }
 }
