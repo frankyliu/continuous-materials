@@ -12,4 +12,4 @@ include 'Libs/LibWorkflow',
         'Services/ServiceDORMServer',
         'Services/ServiceMultiRepoProxy',
         'Applications/ApplicationMavenRepoIndexer',
-        'Tools/GradleDistribution'
+        'Toolings/GradleDistribution'
