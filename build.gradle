@@ -192,7 +192,7 @@ project(':Services/ServiceDORMServer') {
     }
 }
 
-project(':Applications/ApplicationMavenRepoImporter') {
+project(':Applications/ApplicationMavenRepoIndexer') {
     dependencies {
         compile project(':Libs/LibMongoDomainObjects')
     }
