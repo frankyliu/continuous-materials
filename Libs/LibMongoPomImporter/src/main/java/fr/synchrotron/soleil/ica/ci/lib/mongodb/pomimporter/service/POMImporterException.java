@@ -1,4 +1,4 @@
-package fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.exception;
+package fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service;
 
 /**
  * @author Gregory Boissinot

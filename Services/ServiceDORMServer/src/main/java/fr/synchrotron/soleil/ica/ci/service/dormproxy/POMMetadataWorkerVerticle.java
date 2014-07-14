@@ -1,11 +1,10 @@
 package fr.synchrotron.soleil.ica.ci.service.dormproxy;
 
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ArtifactDocumentKey;
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomexporter.POMDocumentRepository;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomexporter.POMExportService;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service.POMImportService;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service.dictionary.SoleilDictionary;
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.repository.exception.NoSuchElementException;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.repository.exception.NoDocumentException;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.BasicMongoDBDataSource;
 import org.vertx.java.busmods.BusModBase;
 import org.vertx.java.core.Handler;
@@ -20,9 +19,9 @@ import java.io.StringWriter;
  * @author Gregory Boissinot
  */
 public class POMMetadataWorkerVerticle extends BusModBase {
-    private  final Logger logger = LoggerFactory.getLogger(POMMetadataWorkerVerticle.class);
     private static final String ACTION_IMPORT = "import";
     private static final String ACTION_EXPORT = "export";
+    private final Logger logger = LoggerFactory.getLogger(POMMetadataWorkerVerticle.class);
 
     @Override
     public void start() {
@@ -61,8 +60,8 @@ public class POMMetadataWorkerVerticle extends BusModBase {
             pomImportService.importPomFile(pomContent);
             message.reply(true);
         } catch (Throwable t) {
-            logger.error("error",t);
-          //  t.printStackTrace();
+            logger.error("error", t);
+            //  t.printStackTrace();
             message.fail(-1, t.getMessage());
         }
     }
@@ -80,16 +79,16 @@ public class POMMetadataWorkerVerticle extends BusModBase {
             ArtifactDocumentKey artifactDocumentKey = new ArtifactDocumentKey(org, name, version, status);
             final POMExportService
                     pomExportService = new POMExportService(
-                    new POMDocumentRepository(new BasicMongoDBDataSource(mongoHost, mongoPort, mongoDbName)));
+                    new BasicMongoDBDataSource(mongoHost, mongoPort, mongoDbName));
             StringWriter stringWriter = new StringWriter();
             pomExportService.exportPomFile(stringWriter, artifactDocumentKey);
             message.reply(stringWriter.toString());
-        } catch (NoSuchElementException nse) {
+        } catch (NoDocumentException nse) {
             logger.error("error", nse);
             message.fail(0, "Artifact doesn't exist.");
         } catch (Throwable t) {
-            logger.error("error",t);
-          // t.printStackTrace();
+            logger.error("error", t);
+            // t.printStackTrace();
             message.fail(-1, t.getMessage());
         }
     }

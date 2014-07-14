@@ -35,7 +35,7 @@ public class ArtifactDocument {
     private boolean force;
     private ArtifactDocumentForJava javaLanguage;
     private ArtifactDocumentForC cLanguage;
-    private List<ArtifactDependency> dependencies;
+
     private BuildContext buildContext;
     private List<String> modules;
 
@@ -181,14 +181,6 @@ public class ArtifactDocument {
         this.cLanguage = cLanguage;
     }
 
-    public List<ArtifactDependency> getDependencies() {
-        return dependencies;
-    }
-
-    public void setDependencies(List<ArtifactDependency> dependencies) {
-        this.dependencies = dependencies;
-    }
-
     public BuildContext getBuildContext() {
         return buildContext;
     }
@@ -224,7 +216,6 @@ public class ArtifactDocument {
                 ", isForce=" + force +
                 ", javaLanguage=" + javaLanguage +
                 ", cLanguage=" + cLanguage +
-                ", dependencies=" + dependencies +
                 ", buildContext=" + buildContext +
                 ", modules=" + modules +
                 '}';

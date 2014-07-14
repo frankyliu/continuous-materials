@@ -1,6 +1,6 @@
 package fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service.dictionary;
 
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.exception.POMImporterException;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service.POMImporterException;
 import org.apache.commons.lang.text.StrSubstitutor;
 
 import java.io.IOException;

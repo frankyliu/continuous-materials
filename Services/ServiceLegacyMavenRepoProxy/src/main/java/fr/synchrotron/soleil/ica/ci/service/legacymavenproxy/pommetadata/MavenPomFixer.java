@@ -1,6 +1,6 @@
 package fr.synchrotron.soleil.ica.ci.service.legacymavenproxy.pommetadata;
 
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.ArtifactRepository;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.LatestArtifactRepository;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.service.ArtifactVersionResolverService;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.service.MavenVersionResolverService;
 import org.apache.maven.model.*;
@@ -18,9 +18,9 @@ import java.util.Properties;
  */
 public class MavenPomFixer {
 
-    private final ArtifactRepository artifactRepository;
+    private final LatestArtifactRepository artifactRepository;
 
-    public MavenPomFixer(ArtifactRepository artifactRepository) {
+    public MavenPomFixer(LatestArtifactRepository artifactRepository) {
         this.artifactRepository = artifactRepository;
     }
 

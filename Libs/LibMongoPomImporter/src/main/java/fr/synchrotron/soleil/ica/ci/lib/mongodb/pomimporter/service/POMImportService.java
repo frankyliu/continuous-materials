@@ -1,11 +1,8 @@
 package fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service;
 
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ArtifactDocument;
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.project.ProjectDocument;
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.exception.POMImporterException;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service.dictionary.Dictionary;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.repository.ArtifactRepository;
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.repository.ProjectRepository;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.MongoDBDataSource;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.model.Model;
@@ -18,7 +15,6 @@ import java.io.*;
 public class POMImportService {
 
     private Dictionary dictionary;
-    private ProjectRepository projectRepository;
     private ArtifactRepository artifactRepository;
 
     public POMImportService(Dictionary dictionary, MongoDBDataSource mongoDBDataSource) {
@@ -29,7 +25,6 @@ public class POMImportService {
             throw new NullPointerException("A MongoDB DataSource is required.");
         }
         this.dictionary = dictionary;
-        this.projectRepository = new ProjectRepository(mongoDBDataSource);
         this.artifactRepository = new ArtifactRepository(mongoDBDataSource);
     }
 
@@ -60,29 +55,17 @@ public class POMImportService {
     private void importPomFile(Reader pomReader) {
         PomReaderService pomReaderService = new PomReaderService();
         final Model pomModel = pomReaderService.getModel(pomReader);
-        insertProjectDocument(pomModel);
-        insertArtifactDocument(pomModel);
+        insertOrUpdateArtifactDocument(pomModel);
     }
 
-    void insertArtifactDocument(Model pomModel) {
-        ArtifactDocumentLoaderService artifactDocumentLoaderService = new ArtifactDocumentLoaderService();
+    void insertOrUpdateArtifactDocument(Model pomModel) {
+        ArtifactDocumentLoaderService artifactDocumentLoaderService = new ArtifactDocumentLoaderService(dictionary);
         final ArtifactDocument artifactDocument = artifactDocumentLoaderService.populateArtifactDocument(pomModel);
 
         if (artifactRepository.isArtifactDocumentAlreadyExists(artifactDocument.getKey())) {
             artifactRepository.updateArtifactDocument(artifactDocument);
         } else {
             artifactRepository.insertArtifactDocument(artifactDocument);
-        }
-    }
-
-    void insertProjectDocument(Model pomModel) {
-        ProjectDocumentLoaderService projectDocumentLoaderService = new ProjectDocumentLoaderService(dictionary);
-        final ProjectDocument projectDocument = projectDocumentLoaderService.populateProjectDocument(pomModel);
-
-        if (projectRepository.isProjectDocumentAlreadyExists(projectDocument.getKey())) {
-            projectRepository.updateProjectDocument(projectDocument);
-        } else {
-            projectRepository.insertProjectDocument(projectDocument);
         }
     }
 

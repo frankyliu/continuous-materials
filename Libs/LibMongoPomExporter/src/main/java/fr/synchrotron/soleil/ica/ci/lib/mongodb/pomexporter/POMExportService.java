@@ -1,7 +1,6 @@
 package fr.synchrotron.soleil.ica.ci.lib.mongodb.pomexporter;
 
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ArtifactDependency;
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ArtifactDependencyExclusion;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ArtifactDocument;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ArtifactDocumentKey;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ext.BuildContext;
@@ -11,6 +10,10 @@ import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ext.maven
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.project.LicenseDocument;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.project.OrganisationDocument;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.project.ProjectDocument;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.mongodb.MongoDBArtifactRepository;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.service.ArtifactVersionResolverService;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.repository.ArtifactRepository;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.MongoDBDataSource;
 import org.apache.maven.model.*;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 
@@ -24,13 +27,15 @@ import java.util.List;
  */
 public class POMExportService {
 
-    private POMDocumentRepository pomDocumentRepository;
+    private final ArtifactRepository artifactRepository;
+    private final MavenDependencyBuilder dependencyBuilder;
 
-    public POMExportService(POMDocumentRepository pomDocumentRepository) {
-        if (pomDocumentRepository == null) {
-            throw new NullPointerException("A pomDocumentRepository is required.");
+    public POMExportService(MongoDBDataSource mongoDBDataSource) {
+        if (mongoDBDataSource == null) {
+            throw new NullPointerException("A mongoDB dataSource is required.");
         }
-        this.pomDocumentRepository = pomDocumentRepository;
+        this.artifactRepository = new ArtifactRepository(mongoDBDataSource);
+        this.dependencyBuilder = new MavenDependencyBuilder(new ArtifactVersionResolverService(new MongoDBArtifactRepository(mongoDBDataSource)));
     }
 
     public void exportPomFile(Writer writer, ArtifactDocumentKey artifactDocumentKey) throws POMExporterException {
@@ -62,106 +67,96 @@ public class POMExportService {
 
     private Model getMavenModel(String org, String name, String version, String status) {
 
-
         Model pomModel = new Model();
 
-        final POMDocument pomDocument = pomDocumentRepository.loadPOMDocument(org, name, version, status);
+        final ArtifactDocument artifactDocument = artifactRepository.findArtifactDocument(new ArtifactDocumentKey(org, name, version, status));
 
         //-- Populate form ArtifactDocument
-
-        final ArtifactDocument artifactDocument = pomDocument.getAritfactDocument();
         pomModel.setGroupId(artifactDocument.getKey().getOrg());
         pomModel.setArtifactId(artifactDocument.getKey().getName());
         pomModel.setVersion(artifactDocument.getKey().getVersion() + "." + artifactDocument.getKey().getStatus());
         pomModel.setModules(artifactDocument.getModules());
-        final List<ArtifactDependency> dependencies = artifactDocument.getDependencies();
+
+
+        final BuildContext buildContext = artifactDocument.getBuildContext();
+        if (buildContext == null) {
+            return pomModel;
+        }
+
+
+        final List<ArtifactDependency> dependencies = buildContext.getRuntimeDependencies();
         if (dependencies != null) {
             for (ArtifactDependency artifactDependency : dependencies) {
-                Dependency dependency = new Dependency();
-                dependency.setGroupId(artifactDependency.getOrg());
-                dependency.setArtifactId(artifactDependency.getName());
-                //TODO Check null version
-                dependency.setVersion(artifactDependency.getVersion());
-                dependency.setScope(artifactDependency.getScope());
-                pomModel.addDependency(dependency);
-                List<ArtifactDependencyExclusion> artifactDependencyExclusions = artifactDependency.getExclusions();
-                List<Exclusion> exclusions = new ArrayList<Exclusion>();
-                for (ArtifactDependencyExclusion artifactDependencyExclusion : artifactDependencyExclusions) {
-                    Exclusion ex = new Exclusion();
-                    ex.setGroupId(artifactDependencyExclusion.getGroupId());
-                    ex.setArtifactId(artifactDependencyExclusion.getArtifactId());
-                    exclusions.add(ex);
-                }
-                dependency.setExclusions(exclusions);
+                pomModel.addDependency(dependencyBuilder.getDependency(artifactDependency));
             }
         }
 
         //Extract Maven specifities
-        final BuildContext buildContext = artifactDocument.getBuildContext();
-        if (buildContext != null) {
-            final BuildTool buildTool = buildContext.getBuildTool();
-            if (buildTool != null) {
-                final MavenProjectInfo mavenProjectInfo = buildTool.getMaven();
-                if (mavenProjectInfo != null) {
-                    pomModel.setPackaging(mavenProjectInfo.getPackaging());
-                }
+        final BuildTool buildTool = buildContext.getBuildTool();
+        if (buildTool != null) {
+            final MavenProjectInfo mavenProjectInfo = buildTool.getMaven();
+            if (mavenProjectInfo != null) {
+                pomModel.setPackaging(mavenProjectInfo.getPackaging());
             }
         }
 
         //-- Populate from ProjectDocument
-        final ProjectDocument projectDocument = pomDocument.getProjectDocument();
-        pomModel.setDescription(projectDocument.getDescription());
-        pomModel.setInceptionYear(projectDocument.getInceptionYear());
+        final ProjectDocument projectDocument = buildContext.getProjectInfo();
+        if (projectDocument != null) {
+            pomModel.setDescription(projectDocument.getDescription());
+            pomModel.setInceptionYear(projectDocument.getInceptionYear());
 
-        OrganisationDocument organisationDocument = projectDocument.getOrganisation();
-        if (organisationDocument != null) {
-            Organization organization = new Organization();
-            organization.setUrl(organisationDocument.getUrl());
-            organization.setName(organisationDocument.getName());
-            pomModel.setOrganization(organization);
-        }
+            OrganisationDocument organisationDocument = projectDocument.getOrganisation();
+            if (organisationDocument != null) {
+                Organization organization = new Organization();
+                organization.setUrl(organisationDocument.getUrl());
+                organization.setName(organisationDocument.getName());
+                pomModel.setOrganization(organization);
+            }
 
 
-        final List<DeveloperDocument> developers = projectDocument.getDevelopers();
-        List<Developer> developersMaven = new ArrayList<Developer>();
-        if (developers != null) {
-            for (DeveloperDocument developerDocument : developers) {
-                Developer developer = new Developer();
-                developer.setId(developerDocument.getId());
-                developer.setName(developerDocument.getName());
-                developer.setEmail(developerDocument.getEmail());
-                developer.setUrl(developerDocument.getUrl());
-                developer.setRoles(developerDocument.getRoles());
-                developer.setOrganization(developerDocument.getOrganization());
-                developer.setOrganizationUrl(developerDocument.getOrganizationUrl());
-                developer.setTimezone(developerDocument.getTimezone());
-                //TODO Missing properties
-                developersMaven.add(developer);
+            final List<DeveloperDocument> developers = projectDocument.getDevelopers();
+            List<Developer> developersMaven = new ArrayList<Developer>();
+            if (developers != null) {
+                for (DeveloperDocument developerDocument : developers) {
+                    Developer developer = new Developer();
+                    developer.setId(developerDocument.getId());
+                    developer.setName(developerDocument.getName());
+                    developer.setEmail(developerDocument.getEmail());
+                    developer.setUrl(developerDocument.getUrl());
+                    developer.setRoles(developerDocument.getRoles());
+                    developer.setOrganization(developerDocument.getOrganization());
+                    developer.setOrganizationUrl(developerDocument.getOrganizationUrl());
+                    developer.setTimezone(developerDocument.getTimezone());
+                    //TODO Missing properties
+                    developersMaven.add(developer);
+                }
+            }
+            pomModel.setDevelopers(developersMaven);
+
+            // Licence
+            List<LicenseDocument> licenses = projectDocument.getLicences();
+            List<License> licencesMaven = new ArrayList<License>();
+            if (licenses != null) {
+                for (LicenseDocument license : licenses) {
+                    License licenseMaven = new License();
+                    licenseMaven.setName(license.getName());
+                    licenseMaven.setUrl(license.getUrl());
+                    licenseMaven.setDistribution(license.getDistribution());
+                    licenseMaven.setComments(license.getComments());
+                    licencesMaven.add(licenseMaven);
+                }
+            }
+            pomModel.setLicenses(licencesMaven);
+
+            final String scmConnection = projectDocument.getScmConnection();
+            if (scmConnection != null) {
+                final Scm scm = new Scm();
+                scm.setConnection(scmConnection);
+                pomModel.setScm(scm);
             }
         }
-        pomModel.setDevelopers(developersMaven);
 
-        // Licence
-        List<LicenseDocument> licenses = projectDocument.getLicences();
-        List<License> licencesMaven = new ArrayList<License>();
-        if (licenses != null) {
-            for (LicenseDocument license : licenses) {
-                License licenseMaven = new License();
-                licenseMaven.setName(license.getName());
-                licenseMaven.setUrl(license.getUrl());
-                licenseMaven.setDistribution(license.getDistribution());
-                licenseMaven.setComments(license.getComments());
-                licencesMaven.add(licenseMaven);
-            }
-        }
-        pomModel.setLicenses(licencesMaven);
-
-        final String scmConnection = projectDocument.getScmConnection();
-        if (scmConnection != null) {
-            final Scm scm = new Scm();
-            scm.setConnection(scmConnection);
-            pomModel.setScm(scm);
-        }
 
         return pomModel;
     }

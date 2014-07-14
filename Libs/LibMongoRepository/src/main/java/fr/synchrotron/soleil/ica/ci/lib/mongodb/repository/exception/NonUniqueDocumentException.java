@@ -5,9 +5,9 @@ import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.MongoDBException;
 /**
  * @author Gregory Boissinot
  */
-public class DuplicateElementException extends MongoDBException {
+public class NonUniqueDocumentException extends MongoDBException {
 
-    public DuplicateElementException(String s) {
+    public NonUniqueDocumentException(String s) {
         super(s);
     }
 

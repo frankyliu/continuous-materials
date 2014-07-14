@@ -13,8 +13,6 @@ public class ArtifactDependency {
 
     private String version;
 
-    private String status;
-
     private String scope;
 
     private List<ArtifactDependencyExclusion> exclusions;
@@ -22,20 +20,12 @@ public class ArtifactDependency {
     public ArtifactDependency() {
     }
 
-    public ArtifactDependency(String org, String name, String version, String status, String scope) {
+    public ArtifactDependency(String org, String name, String version, String scope) {
         this.org = org;
         this.name = name;
         this.version = version;
-        this.status = status;
         this.scope = scope;
     }
-
-    public ArtifactDependency(String org, String name, String scope) {
-        this.org = org;
-        this.name = name;
-        this.scope = scope;
-    }
-
 
     public String getOrg() {
         return org;
@@ -59,14 +49,6 @@ public class ArtifactDependency {
 
     public void setVersion(String version) {
         this.version = version;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public String getScope() {

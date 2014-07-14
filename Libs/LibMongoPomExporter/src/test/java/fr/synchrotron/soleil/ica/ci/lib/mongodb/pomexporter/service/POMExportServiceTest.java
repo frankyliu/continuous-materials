@@ -3,7 +3,6 @@ package fr.synchrotron.soleil.ica.ci.lib.mongodb.pomexporter.service;
 import com.github.fakemongo.Fongo;
 import com.mongodb.DB;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ArtifactDocumentKey;
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomexporter.POMDocumentRepository;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomexporter.POMExportService;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service.POMImportService;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service.PomReaderService;
@@ -45,7 +44,7 @@ public class POMExportServiceTest {
         jongo = new Jongo(mongoDB);
         final InMemoryMongoDBDataSource mongoDBDataSource = new InMemoryMongoDBDataSource();
         pomImportService = new POMImportService(new NoDictionary(), mongoDBDataSource);
-        pomExportService = new POMExportService(new POMDocumentRepository(mongoDBDataSource));
+        pomExportService = new POMExportService(mongoDBDataSource);
     }
 
     @After

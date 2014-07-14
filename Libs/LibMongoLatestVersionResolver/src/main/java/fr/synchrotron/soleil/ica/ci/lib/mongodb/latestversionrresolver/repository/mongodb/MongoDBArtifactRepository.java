@@ -1,7 +1,7 @@
 package fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.mongodb;
 
 import com.mongodb.*;
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.ArtifactRepository;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.LatestArtifactRepository;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.MongoDBDataSource;
 
 import java.util.logging.Logger;
@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 /**
  * @author Gregory Boissinot
  */
-public class MongoDBArtifactRepository implements ArtifactRepository {
+public class MongoDBArtifactRepository implements LatestArtifactRepository {
 
     public static final String MONGODB_ARTIFACTS_LATEST_COLLECTION = "artifacts.latest";
     private static final Logger LOGGER = Logger.getLogger(MongoDBArtifactRepository.class.getName());

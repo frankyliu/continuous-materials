@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.WriteConcern;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.project.ProjectDocument;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.project.ProjectDocumentKey;
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.repository.exception.DuplicateElementException;
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.repository.exception.NoSuchElementException;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.repository.exception.NoDocumentException;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.repository.exception.NonUniqueDocumentException;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.MongoDBDataSource;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.MongoDBException;
 import org.jongo.MongoCollection;
@@ -50,12 +50,12 @@ public class ProjectRepository extends AbstractRepository {
         final Iterable<ProjectDocument> projectDocuments = projects.find(stringWriter.toString()).as(ProjectDocument.class);
         final Iterator<ProjectDocument> projectDocumentIterator = projectDocuments.iterator();
         if (!projectDocumentIterator.hasNext()) {
-            throw new NoSuchElementException("One Project document must match criteria.");
+            throw new NoDocumentException("One Project document must match criteria.");
         }
 
         final ProjectDocument projectDocument = projectDocumentIterator.next();
         if (projectDocumentIterator.hasNext()) {
-            throw new DuplicateElementException("Only one Project document must be returned.");
+            throw new NonUniqueDocumentException("Only one Project document must be returned.");
         }
 
         return projectDocument;

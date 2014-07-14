@@ -6,18 +6,26 @@ import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ArtifactD
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ext.BuildContext;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ext.BuildTool;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ext.maven.MavenProjectInfo;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.project.ProjectDocument;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service.dictionary.Dictionary;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Exclusion;
 import org.apache.maven.model.Model;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @author Gregory Boissinot
  */
 class ArtifactDocumentLoaderService {
+
+    private Dictionary dictionary;
+
+    ArtifactDocumentLoaderService(Dictionary dictionary) {
+        this.dictionary = dictionary;
+    }
 
     @SuppressWarnings("unchecked")
     ArtifactDocument populateArtifactDocument(Model model) {
@@ -25,6 +33,8 @@ class ArtifactDocumentLoaderService {
         if (model == null) {
             throw new NullPointerException("A Maven Model is required.");
         }
+
+        BuildContext buildContext = new BuildContext();
 
         StatusVersion statusVersion = extractStatusFromVersion(model.getVersion());
         ArtifactDocument artifactDocument =
@@ -36,13 +46,9 @@ class ArtifactDocumentLoaderService {
         artifactDocument.setModules(model.getModules());
         final List<Dependency> dependencies = model.getDependencies();
         if (dependencies != null) {
-            List<ArtifactDependency> artifactDependencies = new ArrayList<ArtifactDependency>();
+            List<ArtifactDependency> artifactDependencies = new ArrayList<>();
             for (Dependency dependency : dependencies) {
-                ArtifactDependency artifactDependency =
-                        new ArtifactDependency(
-                                dependency.getGroupId(),
-                                dependency.getArtifactId(),
-                                dependency.getScope());
+                ArtifactDependency artifactDependency = getArtifactDependency(dependency, model.getProperties());
                 List<Exclusion> exclusions = dependency.getExclusions();
                 List<ArtifactDependencyExclusion> artifactDependencyExclusions = new ArrayList<ArtifactDependencyExclusion>();
                 for (Exclusion exclusion : exclusions) {
@@ -51,7 +57,8 @@ class ArtifactDocumentLoaderService {
                 artifactDependency.setExclusions(artifactDependencyExclusions);
                 artifactDependencies.add(artifactDependency);
             }
-            artifactDocument.setDependencies(artifactDependencies);
+            //artifactDocument.setDependencies(artifactDependencies);
+            buildContext.setRuntimeDependencies(artifactDependencies);
         }
 
 
@@ -59,14 +66,37 @@ class ArtifactDocumentLoaderService {
         final String packaging = model.getPackaging();
         mavenProjectInfo.setPackaging(packaging != null ? packaging : "jar");
 
-        final BuildContext buildContext = new BuildContext();
         final BuildTool buildTool = new BuildTool();
         buildTool.setMaven(mavenProjectInfo);
         buildContext.setBuildTool(buildTool);
-        buildContext.setBuildtime(new Date());
+
+        ProjectDocumentLoaderService projectDocumentLoaderService = new ProjectDocumentLoaderService(dictionary);
+        final ProjectDocument projectDocument = projectDocumentLoaderService.populateProjectDocument(model);
+        buildContext.setProjectInfo(projectDocument);
+
         artifactDocument.setBuildContext(buildContext);
 
         return artifactDocument;
+    }
+
+    private ArtifactDependency getArtifactDependency(Dependency dependency, Properties properties) {
+        final String version = dependency.getVersion();
+
+        String resolvedVersion;
+        if (version == null) {
+            resolvedVersion = version;
+        } else if (version.startsWith("$")) {
+            String property = version.substring(version.indexOf("${") + 2, version.lastIndexOf("}"));
+            resolvedVersion = properties.getProperty(property);
+        } else {
+            resolvedVersion = version;
+        }
+
+        return new ArtifactDependency(
+                dependency.getGroupId(),
+                dependency.getArtifactId(),
+                resolvedVersion,
+                dependency.getScope());
     }
 
     private StatusVersion extractStatusFromVersion(String version) {

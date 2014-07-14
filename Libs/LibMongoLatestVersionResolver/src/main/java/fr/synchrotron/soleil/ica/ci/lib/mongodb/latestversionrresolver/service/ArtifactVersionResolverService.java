@@ -1,6 +1,6 @@
 package fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.service;
 
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.ArtifactRepository;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.LatestArtifactRepository;
 import fr.synchrotron.soleil.ica.ci.lib.workflow.Workflow;
 
 import java.util.logging.Logger;
@@ -12,24 +12,24 @@ public class ArtifactVersionResolverService {
 
     private static final Logger LOGGER = Logger.getLogger(MavenVersionResolverService.class.getName());
 
-    private final ArtifactRepository artifactRepository;
+    private final LatestArtifactRepository latestArtifactRepository;
 
     private final Workflow workflow;
 
-    public ArtifactVersionResolverService(ArtifactRepository artifactRepository) {
-        if (artifactRepository == null) {
+    public ArtifactVersionResolverService(LatestArtifactRepository latestArtifactRepository) {
+        if (latestArtifactRepository == null) {
             throw new NullPointerException("An ArtifactRepository is required.");
         }
-        this.artifactRepository = artifactRepository;
+        this.latestArtifactRepository = latestArtifactRepository;
         this.workflow = Workflow.DEFAULT_WORKFLOW_STATUS;
     }
 
-    public ArtifactVersionResolverService(ArtifactRepository artifactRepository, Workflow workflow) {
+    public ArtifactVersionResolverService(LatestArtifactRepository latestArtifactRepository, Workflow workflow) {
 
-        if (artifactRepository == null) {
+        if (latestArtifactRepository == null) {
             throw new NullPointerException("An ArtifactRepository is required.");
         }
-        this.artifactRepository = artifactRepository;
+        this.latestArtifactRepository = latestArtifactRepository;
 
         if (workflow == null) {
             throw new NullPointerException("A Workflow is required.");
@@ -85,7 +85,7 @@ public class ArtifactVersionResolverService {
         String latestVersion = null;
         String curStatus = workflow.getNormalizedStatus(status);
         while (latestVersion == null && curStatus != null) {
-            latestVersion = artifactRepository.getLatestVersion(org, name, "binary", curStatus);
+            latestVersion = latestArtifactRepository.getLatestVersion(org, name, "binary", curStatus);
             curStatus = workflow.getNextStatusLabel(curStatus);
         }
 

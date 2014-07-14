@@ -1,6 +1,5 @@
 package fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service;
 
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.exception.POMImporterException;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;

@@ -3,8 +3,8 @@ package fr.synchrotron.soleil.ica.ci.lib.mongodb.repository;
 import com.mongodb.WriteConcern;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ArtifactDocument;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ArtifactDocumentKey;
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.repository.exception.DuplicateElementException;
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.repository.exception.NoSuchElementException;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.repository.exception.NoDocumentException;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.repository.exception.NonUniqueDocumentException;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.MongoDBDataSource;
 import org.jongo.MongoCollection;
 
@@ -27,12 +27,12 @@ public class ArtifactRepository extends AbstractRepository {
         final Iterable<ArtifactDocument> artifactDocuments = artifacts.find(query).as(ArtifactDocument.class);
         final Iterator<ArtifactDocument> artifactDocumentIterator = artifactDocuments.iterator();
         if (!artifactDocumentIterator.hasNext()) {
-            throw new NoSuchElementException("At least one Artifact document must match criteria.");
+            throw new NoDocumentException("At least one Artifact document must match criteria.");
         }
 
         final ArtifactDocument artifactDocument = artifactDocumentIterator.next();
         if (artifactDocumentIterator.hasNext()) {
-            throw new DuplicateElementException("Only one Artifact document must be returned.");
+            throw new NonUniqueDocumentException("Only one Artifact document must be returned.");
         }
 
         return artifactDocument;
@@ -52,6 +52,11 @@ public class ArtifactRepository extends AbstractRepository {
     public void insertArtifactDocument(ArtifactDocument artifactDocument) {
         MongoCollection artifacts = jongo.getCollection(ArtifactDocument.MONGO_ARTIFACTS_COLLECTION_NAME);
         artifacts.insert(artifactDocument);
+    }
+
+    public void deleteArtifactsCollection() {
+        MongoCollection projectsCollection = jongo.getCollection(ArtifactDocument.MONGO_ARTIFACTS_COLLECTION_NAME);
+        projectsCollection.remove();
     }
 
 }

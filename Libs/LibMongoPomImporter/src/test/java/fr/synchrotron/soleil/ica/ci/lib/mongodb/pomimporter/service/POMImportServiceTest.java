@@ -5,12 +5,12 @@ import com.mongodb.DB;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ArtifactDependency;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ArtifactDocument;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ArtifactDocumentKey;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ext.BuildContext;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ext.DeveloperDocument;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.project.ProjectDocument;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.project.ProjectDocumentKey;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service.dictionary.NoDictionary;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.repository.ArtifactRepository;
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.repository.ProjectRepository;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.MongoDBDataSource;
 import org.junit.After;
 import org.junit.BeforeClass;
@@ -31,7 +31,6 @@ public class POMImportServiceTest {
 
     private static DB mongoDB;
     private static POMImportService pomImportService;
-    private static ProjectRepository projectRepository;
     private static ArtifactRepository artifactRepository;
 
     @BeforeClass
@@ -40,7 +39,6 @@ public class POMImportServiceTest {
         Fongo fongo = new Fongo("testMongoServer");
         mongoDB = fongo.getDB("repo");
         MongoDBDataSource mongoDBDataSource = new InMemoryMongoDBDataSource();
-        projectRepository = new ProjectRepository(mongoDBDataSource);
         artifactRepository = new ArtifactRepository(mongoDBDataSource);
 
         pomImportService = new POMImportService(new NoDictionary(), mongoDBDataSource);
@@ -48,7 +46,7 @@ public class POMImportServiceTest {
 
     @After
     public void cleanupProjectsCollection() {
-        projectRepository.deleteProjectsCollection();
+        artifactRepository.deleteArtifactsCollection();
     }
 
     @Test
@@ -58,7 +56,7 @@ public class POMImportServiceTest {
         File pomFile = new File(resource.toURI());
         FileReader pomFileReader = new FileReader(pomFile);
         PomReaderService pomReaderService = new PomReaderService();
-        pomImportService.insertArtifactDocument(pomReaderService.getModel(pomFileReader));
+        pomImportService.insertOrUpdateArtifactDocument(pomReaderService.getModel(pomFileReader));
         pomFileReader.close();
 
         ArtifactDocument artifactDocument = artifactRepository.findArtifactDocument(
@@ -77,7 +75,8 @@ public class POMImportServiceTest {
         assertEquals("1.0.1", artifactDocumentKey.getVersion());
         assertEquals("INTEGRATION", artifactDocumentKey.getStatus());
 
-        final List<ArtifactDependency> dependencies = artifactDocument.getDependencies();
+        assertNotNull(artifactDocument.getBuildContext());
+        final List<ArtifactDependency> dependencies = artifactDocument.getBuildContext().getRuntimeDependencies();
         assertNotNull(dependencies);
         assertNotEquals(0, dependencies.size());
 
@@ -86,26 +85,16 @@ public class POMImportServiceTest {
             final String org = dependency.getOrg();
             final String name = dependency.getName();
             if ("org.mongodb".equals(org) && "mongo-java-driver".equals(name)) {
-                assertNull(dependency.getVersion());
+                assertNotNull(dependency.getVersion());
                 depMongoDbDriverPresent = true;
             }
         }
         assertTrue(depMongoDbDriverPresent);
-    }
 
-    @Test
-    public void projectDocumentInsertion() throws Exception {
+        final BuildContext buildContext = artifactDocument.getBuildContext();
+        assertNotNull(buildContext);
 
-        URL resource = this.getClass().getResource("pom-1.xml");
-        File pomFile = new File(resource.toURI());
-        FileReader pomFileReader = new FileReader(pomFile);
-        PomReaderService pomReaderService = new PomReaderService();
-        pomImportService.insertProjectDocument(pomReaderService.getModel(pomFileReader));
-        pomFileReader.close();
-
-        ProjectDocument projectDocument =
-                projectRepository.findProjectDocument(
-                        "fr.synchrotron.soleil.ica.ci.lib", "maven-versionresolver");
+        final ProjectDocument projectDocument = buildContext.getProjectInfo();
         assertNotNull(projectDocument);
 
         final ProjectDocumentKey projectDocumentKey = projectDocument.getKey();
@@ -135,17 +124,27 @@ public class POMImportServiceTest {
 
         PomReaderService pomReaderService = new PomReaderService();
         FileReader pomFileReader1 = new FileReader(pomFile1);
-        pomImportService.insertProjectDocument(pomReaderService.getModel(pomFileReader1));
+        pomImportService.insertOrUpdateArtifactDocument(pomReaderService.getModel(pomFileReader1));
         pomFileReader1.close();
 
         //Insert the same project with some modification
         FileReader pomFileReader2 = new FileReader(pomFile2);
-        pomImportService.insertProjectDocument(pomReaderService.getModel(pomFileReader2));
+        pomImportService.insertOrUpdateArtifactDocument(pomReaderService.getModel(pomFileReader2));
         pomFileReader2.close();
 
-        ProjectDocument projectDocument =
-                projectRepository.findProjectDocument(
-                        "fr.synchrotron.soleil.ica.ci.lib", "maven-versionresolver");
+        ArtifactDocument artifactDocument = artifactRepository.findArtifactDocument(
+                new ArtifactDocumentKey(
+                        "fr.synchrotron.soleil.ica.ci.lib",
+                        "maven-versionresolver",
+                        "1.0.1",
+                        "INTEGRATION")
+        );
+        assertNotNull(artifactDocument);
+
+        final BuildContext buildContext = artifactDocument.getBuildContext();
+        assertNotNull(buildContext);
+
+        final ProjectDocument projectDocument = buildContext.getProjectInfo();
         assertNotNull(projectDocument);
 
         final ProjectDocumentKey projectDocumentKey = projectDocument.getKey();

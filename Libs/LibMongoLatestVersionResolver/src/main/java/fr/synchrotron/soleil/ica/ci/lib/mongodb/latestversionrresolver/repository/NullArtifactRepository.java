@@ -3,7 +3,7 @@ package fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.reposito
 /**
  * @author Gregory Boissinot
  */
-public class NullArtifactRepository implements ArtifactRepository {
+public class NullArtifactRepository implements LatestArtifactRepository {
 
     @Override
     public String getName() {

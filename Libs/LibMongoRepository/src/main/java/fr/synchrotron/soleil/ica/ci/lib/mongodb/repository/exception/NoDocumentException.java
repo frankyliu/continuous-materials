@@ -5,9 +5,9 @@ import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.MongoDBException;
 /**
  * @author Gregory Boissinot
  */
-public class NoSuchElementException extends MongoDBException {
+public class NoDocumentException extends MongoDBException {
 
-    public NoSuchElementException(String s) {
+    public NoDocumentException(String s) {
         super(s);
     }
 

@@ -3,7 +3,7 @@ package fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.reposito
 /**
  * @author Gregory Boissinot
  */
-public interface ArtifactRepository {
+public interface LatestArtifactRepository {
 
     /**
      * Gets the logical name of the artifact metadata repository
