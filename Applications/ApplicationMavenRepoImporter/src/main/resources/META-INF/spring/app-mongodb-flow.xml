@@ -19,7 +19,7 @@
         </int:channel>
 
         <int:chain input-channel="workingMongoDBChannel">
-            <int:filter ref="binaryArtifactFilter"/>
+            <int:filter ref="primaryArtifactFilter"/>
             <int:transformer expression="@thirdPartyArtifactEnricher.enrich(payload, headers['repo.url'])"/>
             <int:router expression="@artifactRouter.nextRoute(headers['repo.url'])"/>
         </int:chain>
@@ -60,8 +60,8 @@
 
     <task:executor id="poolThreadMongoDB" pool-size="10"/>
 
-    <bean id="binaryArtifactFilter"
-          class="fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb.integration.BinaryArtifactFilter"/>
+    <bean id="primaryArtifactFilter"
+          class="fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb.integration.PrimaryArtifactFilter"/>
     <bean id="thirdPartyArtifactEnricher"
           class="fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.service.mongodb.integration.ThirdPartyArtifactEnricher"/>
 
@@ -72,6 +72,6 @@
         </constructor-arg>
     </bean>
 
-</beans>
+    </beans>
 
-        </beans>
+</beans>

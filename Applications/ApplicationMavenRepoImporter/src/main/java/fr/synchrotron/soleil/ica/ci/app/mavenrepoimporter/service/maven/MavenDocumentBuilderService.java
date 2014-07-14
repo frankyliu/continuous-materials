@@ -20,7 +20,7 @@ public class MavenDocumentBuilderService {
         mavenArtifactDocument.setVersion(artifactInfo.version);
         final String classifier = artifactInfo.classifier;
         if (classifier == null) {
-            mavenArtifactDocument.setType(MavenArtifactType.BINARY.getType());
+            mavenArtifactDocument.setType(MavenArtifactType.PRIMARY.getType());
         } else {
             mavenArtifactDocument.setType(classifier);
         }

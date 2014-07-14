@@ -5,7 +5,7 @@ package fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.domain.maven;
  */
 public enum MavenArtifactType {
 
-    BINARY("binary");
+    PRIMARY("primary");
 
     private final String type;
 
