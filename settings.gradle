@@ -12,4 +12,6 @@ include 'Libs/LibWorkflow',
         'Services/ServiceDORMServer',
         'Services/ServiceMultiRepoProxy',
         'Applications/ApplicationMavenRepoIndexer',
-        'Toolings/GradleDistribution'
+        'Toolings/GradleDistribution',
+        'Toolings/DistribPackager'
+
