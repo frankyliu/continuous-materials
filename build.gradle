@@ -23,7 +23,7 @@ subprojects {
     apply plugin: 'java'
 
     group = 'fr.synchrotron.soleil.ica.ci.lib'
-    version = '1.0.0'
+    version = '2.0.0'
 
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
