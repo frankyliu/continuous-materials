@@ -1,7 +1,9 @@
 package fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.service;
 
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.LatestArtifactRepository;
+import fr.synchrotron.soleil.ica.ci.lib.workflow.DefaultWorkflow;
 import fr.synchrotron.soleil.ica.ci.lib.workflow.Workflow;
+import fr.synchrotron.soleil.ica.ci.lib.workflow.WorkflowEngine;
 
 import java.util.logging.Logger;
 
@@ -21,7 +23,7 @@ public class ArtifactVersionResolverService {
             throw new NullPointerException("An ArtifactRepository is required.");
         }
         this.latestArtifactRepository = latestArtifactRepository;
-        this.workflow = Workflow.DEFAULT_WORKFLOW_STATUS;
+        this.workflow = new DefaultWorkflow();
     }
 
     public ArtifactVersionResolverService(LatestArtifactRepository latestArtifactRepository, Workflow workflow) {

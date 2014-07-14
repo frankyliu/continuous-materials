@@ -94,6 +94,7 @@ project(':Libs/LibMongoPomImporter') {
         compile project(':Libs/LibMongoDomainObjects')
         compile project(':Libs/LibMongoUtilities')
         compile project(':Libs/LibMongoRepository')
+        compile project(':Libs/LibWorkflow')
         compile "commons-lang:commons-lang:$commonsLangVersion"
         compile "commons-io:commons-io:$commonsIoVersion"
         compile("org.apache.maven:maven-core:$mavenCoreVersion") {
@@ -189,6 +190,7 @@ project(':Services/ServiceDORMServer') {
     dependencies {
         compile project(':Libs/LibMongoPomImporter')
         compile project(':Libs/LibMongoPomExporter')
+        compile project(':Libs/LibWorkflow')
     }
 }
 

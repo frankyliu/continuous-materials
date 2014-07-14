@@ -12,6 +12,7 @@ import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.project.ProjectDoc
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service.dictionary.NoDictionary;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.repository.ArtifactRepository;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.MongoDBDataSource;
+import fr.synchrotron.soleil.ica.ci.lib.workflow.DefaultWorkflow;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -56,7 +57,7 @@ public class POMImportServiceTest {
         File pomFile = new File(resource.toURI());
         FileReader pomFileReader = new FileReader(pomFile);
         PomReaderService pomReaderService = new PomReaderService();
-        pomImportService.insertOrUpdateArtifactDocument(pomReaderService.getModel(pomFileReader));
+        pomImportService.insertOrUpdateArtifactDocument(pomReaderService.getModel(pomFileReader), new DefaultWorkflow());
         pomFileReader.close();
 
         ArtifactDocument artifactDocument = artifactRepository.findArtifactDocument(
@@ -64,7 +65,7 @@ public class POMImportServiceTest {
                         "fr.synchrotron.soleil.ica.ci.lib",
                         "maven-versionresolver",
                         "1.0.1",
-                        "INTEGRATION")
+                        "BUILD")
         );
         assertNotNull(artifactDocument);
 
@@ -73,7 +74,7 @@ public class POMImportServiceTest {
         assertEquals("maven-versionresolver", artifactDocumentKey.getName());
 
         assertEquals("1.0.1", artifactDocumentKey.getVersion());
-        assertEquals("INTEGRATION", artifactDocumentKey.getStatus());
+        assertEquals("BUILD", artifactDocumentKey.getStatus());
 
         assertNotNull(artifactDocument.getBuildContext());
         final List<ArtifactDependency> dependencies = artifactDocument.getBuildContext().getRuntimeDependencies();
@@ -121,15 +122,16 @@ public class POMImportServiceTest {
         URL resource2 = this.getClass().getResource("pom-2.xml");
         File pomFile2 = new File(resource2.toURI());
 
+        final DefaultWorkflow workflow = new DefaultWorkflow();
 
         PomReaderService pomReaderService = new PomReaderService();
         FileReader pomFileReader1 = new FileReader(pomFile1);
-        pomImportService.insertOrUpdateArtifactDocument(pomReaderService.getModel(pomFileReader1));
+        pomImportService.insertOrUpdateArtifactDocument(pomReaderService.getModel(pomFileReader1), workflow);
         pomFileReader1.close();
 
         //Insert the same project with some modification
         FileReader pomFileReader2 = new FileReader(pomFile2);
-        pomImportService.insertOrUpdateArtifactDocument(pomReaderService.getModel(pomFileReader2));
+        pomImportService.insertOrUpdateArtifactDocument(pomReaderService.getModel(pomFileReader2), workflow);
         pomFileReader2.close();
 
         ArtifactDocument artifactDocument = artifactRepository.findArtifactDocument(
@@ -137,7 +139,7 @@ public class POMImportServiceTest {
                         "fr.synchrotron.soleil.ica.ci.lib",
                         "maven-versionresolver",
                         "1.0.1",
-                        "INTEGRATION")
+                        "BUILD")
         );
         assertNotNull(artifactDocument);
 

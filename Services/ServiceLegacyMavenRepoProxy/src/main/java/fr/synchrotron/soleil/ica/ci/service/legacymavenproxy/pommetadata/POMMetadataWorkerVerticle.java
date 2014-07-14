@@ -4,6 +4,7 @@ import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repositor
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service.POMImportService;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service.dictionary.SoleilDictionary;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.BasicMongoDBDataSource;
+import fr.synchrotron.soleil.ica.ci.lib.workflow.DefaultWorkflow;
 import fr.synchrotron.soleil.ica.ci.service.legacymavenproxy.ServiceAddressRegistry;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
@@ -84,7 +85,7 @@ public class POMMetadataWorkerVerticle extends BusModBase {
             final POMImportService pomImportService = new POMImportService(
                     new SoleilDictionary(),
                     new BasicMongoDBDataSource(mongoHost, mongoPort, mongoDbName));
-            pomImportService.importPomFile(pomContent);
+            pomImportService.importPomFile(pomContent, new DefaultWorkflow());
             message.reply();
         } catch (Throwable e) {
             message.fail(-1, e.getMessage());

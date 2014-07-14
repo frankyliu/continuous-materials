@@ -8,6 +8,8 @@ import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ext.Build
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.artifact.ext.maven.MavenProjectInfo;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.domainobjects.project.ProjectDocument;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service.dictionary.Dictionary;
+import fr.synchrotron.soleil.ica.ci.lib.workflow.StatusVersion;
+import fr.synchrotron.soleil.ica.ci.lib.workflow.Workflow;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Exclusion;
 import org.apache.maven.model.Model;
@@ -28,7 +30,7 @@ class ArtifactDocumentLoaderService {
     }
 
     @SuppressWarnings("unchecked")
-    ArtifactDocument populateArtifactDocument(Model model) {
+    ArtifactDocument populateArtifactDocument(Model model, Workflow workflow) {
 
         if (model == null) {
             throw new NullPointerException("A Maven Model is required.");
@@ -36,7 +38,7 @@ class ArtifactDocumentLoaderService {
 
         BuildContext buildContext = new BuildContext();
 
-        StatusVersion statusVersion = extractStatusFromVersion(model.getVersion());
+        StatusVersion statusVersion = workflow.extractStatusAndVersionFromMavenVersion(model.getVersion());
         ArtifactDocument artifactDocument =
                 new ArtifactDocument(
                         model.getGroupId(),
@@ -97,29 +99,5 @@ class ArtifactDocumentLoaderService {
                 dependency.getArtifactId(),
                 resolvedVersion,
                 dependency.getScope());
-    }
-
-    private StatusVersion extractStatusFromVersion(String version) {
-        StatusVersion statusVersion = new StatusVersion();
-        if (version.endsWith("-SNAPSHOT")) {
-            statusVersion.status = "INTEGRATION";
-            statusVersion.version = version.substring(0, version.lastIndexOf("-SNAPSHOT"));
-            return statusVersion;
-        }
-
-        if (version.endsWith(".RELEASE")) {
-            statusVersion.status = "RELEASE";
-            statusVersion.version = version.substring(0, version.lastIndexOf(".RELEASE"));
-            return statusVersion;
-        }
-
-        statusVersion.status = "RELEASE";
-        statusVersion.version = version;
-        return statusVersion;
-    }
-
-    private class StatusVersion {
-        String version;
-        String status;
     }
 }

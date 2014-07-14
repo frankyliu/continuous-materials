@@ -15,29 +15,29 @@ public class WorkflowTest {
 
     @Test(expected = NullPointerException.class)
     public void testNullNormalizedStatus() {
-        Workflow workflow = Workflow.DEFAULT_WORKFLOW_STATUS;
+        Workflow workflow = new DefaultWorkflow();
         assertNull(workflow.getNormalizedStatus(null));
     }
 
     @Test(expected = NullPointerException.class)
     public void testNullNextStatus() {
-        Workflow workflow = Workflow.DEFAULT_WORKFLOW_STATUS;
+        Workflow workflow = new DefaultWorkflow();
         assertNull(workflow.getNextStatusLabel(null));
     }
 
     @Test(expected = NullPointerException.class)
     public void testConstructWorkFlowNullName() {
-        new Workflow(null, new ArrayList<String>());
+        WorkflowFactory.createWorkFlow(null, new ArrayList<String>());
     }
 
     @Test(expected = NullPointerException.class)
     public void testConstructWorkFlowNullStatusList() {
-        new Workflow("A Name", null);
+        WorkflowFactory.createWorkFlow("A Name", null);
     }
 
     @Test
     public void testNormalizedStatus() {
-        Workflow workflow = Workflow.DEFAULT_WORKFLOW_STATUS;
+        Workflow workflow = new DefaultWorkflow();
         assertNull(workflow.getNormalizedStatus("UNKNOWN_STATUS"));
         assertEquals("BUILD", workflow.getNormalizedStatus("build"));
         assertEquals("BUILD", workflow.getNormalizedStatus("BUILD"));
@@ -49,7 +49,7 @@ public class WorkflowTest {
 
     @Test
     public void testBuildWorkflowOneElement() {
-        Workflow workflow = new Workflow("TEST_WORKFLOW_ONE_ELEMENT", Arrays.asList("BUILD"));
+        Workflow workflow = WorkflowFactory.createWorkFlow("TEST_WORKFLOW_ONE_ELEMENT", Arrays.asList("BUILD"));
         assertEquals("TEST_WORKFLOW_ONE_ELEMENT", workflow.getName());
         assertEquals("BUILD", workflow.getLatestPromotedStatus());
         assertNull(workflow.getNextStatusLabel("build"));
@@ -59,7 +59,7 @@ public class WorkflowTest {
 
     @Test
     public void testBuildWorkflowTwoElements() {
-        Workflow workflow = new Workflow("TEST_WORKFLOW_TWO_ELEMENTS", Arrays.asList("BUILD", "INTEGRATION"));
+        Workflow workflow = WorkflowFactory.createWorkFlow("TEST_WORKFLOW_TWO_ELEMENTS", Arrays.asList("BUILD", "INTEGRATION"));
         assertEquals("TEST_WORKFLOW_TWO_ELEMENTS", workflow.getName());
         assertEquals("INTEGRATION", workflow.getLatestPromotedStatus());
         assertEquals("INTEGRATION", workflow.getNextStatusLabel("build"));
@@ -71,7 +71,7 @@ public class WorkflowTest {
 
     @Test
     public void testBuildWorkflowThreeElements() {
-        Workflow workflow = new Workflow("TEST_WORKFLOW_THREE_ELEMENTS", Arrays.asList("BUILD", "INTEGRATION", "RELEASE"));
+        Workflow workflow = WorkflowFactory.createWorkFlow("TEST_WORKFLOW_THREE_ELEMENTS", Arrays.asList("BUILD", "INTEGRATION", "RELEASE"));
         assertEquals("TEST_WORKFLOW_THREE_ELEMENTS", workflow.getName());
         assertEquals("RELEASE", workflow.getLatestPromotedStatus());
         assertEquals("INTEGRATION", workflow.getNextStatusLabel("build"));
