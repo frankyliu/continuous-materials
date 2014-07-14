@@ -2,7 +2,7 @@ package fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.service;
 
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.domain.MavenInputArtifact;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.domain.MavenOutputArtifact;
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.ArtifactRepository;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.LatestArtifactRepository;
 import org.junit.Assert;
 
 /**
@@ -17,7 +17,7 @@ public abstract class AbstractVersionTest {
                 new ArtifactVersionResolverService(getArtifactRepository()));
     }
 
-    protected abstract ArtifactRepository getArtifactRepository();
+    protected abstract LatestArtifactRepository getArtifactRepository();
 
     protected String resolveVersion(String value) {
         final String TEST_GROUPID = "testGroupId";

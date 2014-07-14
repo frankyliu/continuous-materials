@@ -1,6 +1,6 @@
 package fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.service;
 
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.ArtifactRepository;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.LatestArtifactRepository;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.NullArtifactRepository;
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,7 +11,7 @@ import org.junit.Test;
 public class MavenVersionResolverNullRepositoryTest extends AbstractVersionTest {
 
     @Override
-    protected ArtifactRepository getArtifactRepository() {
+    protected LatestArtifactRepository getArtifactRepository() {
         return new NullArtifactRepository();
     }
 

@@ -13,7 +13,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class MongoDBArtifactRepositoryTest {
 
-    private static ArtifactRepository artifactRepository;
+    private static LatestArtifactRepository artifactRepository;
 
     @BeforeClass
     public static void setup() {

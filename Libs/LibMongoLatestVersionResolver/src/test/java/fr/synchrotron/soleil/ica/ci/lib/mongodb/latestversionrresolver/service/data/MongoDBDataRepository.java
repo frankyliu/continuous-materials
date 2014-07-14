@@ -2,7 +2,7 @@ package fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.service.
 
 import com.github.fakemongo.Fongo;
 import com.mongodb.DB;
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.ArtifactRepository;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.LatestArtifactRepository;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.mongodb.MongoDBArtifactRepository;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.MongoDBDataSource;
 import org.apache.commons.io.IOUtils;
@@ -49,7 +49,7 @@ public class MongoDBDataRepository {
         inputStream.close();
     }
 
-    public ArtifactRepository getArtifactRepository() {
+    public LatestArtifactRepository getArtifactRepository() {
         return new MongoDBArtifactRepository(new InMemoryMongoDBDataSource());
     }
 

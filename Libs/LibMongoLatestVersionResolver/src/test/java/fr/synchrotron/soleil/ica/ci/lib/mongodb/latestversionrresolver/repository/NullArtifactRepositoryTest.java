@@ -11,7 +11,7 @@ import static org.junit.Assert.assertNull;
  */
 public class NullArtifactRepositoryTest {
 
-    private static ArtifactRepository artifactRepository;
+    private static LatestArtifactRepository artifactRepository;
 
     @BeforeClass
     public static void setup() {

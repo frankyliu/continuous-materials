@@ -1,6 +1,6 @@
 package fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.service;
 
-import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.ArtifactRepository;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.repository.LatestArtifactRepository;
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.latestversionrresolver.service.data.MongoDBDataRepository;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -25,7 +25,7 @@ public class MavenVersionResolverMongoDBRepositoryTest extends AbstractVersionTe
     }
 
     @Override
-    protected ArtifactRepository getArtifactRepository() {
+    protected LatestArtifactRepository getArtifactRepository() {
         return mongoDBDataRepository.getArtifactRepository();
     }
 
