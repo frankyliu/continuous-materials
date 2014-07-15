@@ -31,16 +31,18 @@ public class POMMetadataWorkerVerticle extends BusModBase {
         final Integer mongoPort = getMandatoryIntConfig("mongoPort");
         final String mongoDbName = getMandatoryStringConfig("mongoDbName");
 
+        final BasicMongoDBDataSource mongoDBDataSource = new BasicMongoDBDataSource(mongoHost, mongoPort, mongoDbName);
+
         eb.registerHandler(ServiceAddressRegistry.EB_ADDRESS_POMIMPORT_SERVICE, new Handler<Message<JsonObject>>() {
                     @Override
                     public void handle(Message<JsonObject> message) {
                         String action = message.body().getString("action");
                         switch (action) {
                             case ACTION_IMPORT:
-                                importPom(message, mongoHost, mongoPort, mongoDbName);
+                                importPom(message, mongoDBDataSource);
                                 break;
                             case ACTION_EXPORT:
-                                exportPom(message, mongoHost, mongoPort, mongoDbName);
+                                exportPom(message, mongoDBDataSource);
                                 break;
                             default:
                                 message.reply("Wrong Verticle Action in POMMetadataWorkerVerticle.");
@@ -50,13 +52,11 @@ public class POMMetadataWorkerVerticle extends BusModBase {
         );
     }
 
-    private void importPom(Message<JsonObject> message, String mongoHost, int mongoPort, String mongoDbName) {
+    private void importPom(Message<JsonObject> message, BasicMongoDBDataSource mongoDBDataSource) {
         try {
             String pomContent = message.body().getString("content");
 
-            final POMImportService pomImportService = new POMImportService(
-                    new SoleilDictionary(),
-                    new BasicMongoDBDataSource(mongoHost, mongoPort, mongoDbName));
+            final POMImportService pomImportService = new POMImportService(new SoleilDictionary(), mongoDBDataSource);
             pomImportService.importPomFile(pomContent);
             message.reply(true);
         } catch (Throwable t) {
@@ -66,8 +66,7 @@ public class POMMetadataWorkerVerticle extends BusModBase {
         }
     }
 
-    private void exportPom(Message<JsonObject> message,
-                           String mongoHost, int mongoPort, String mongoDbName) {
+    private void exportPom(Message<JsonObject> message, BasicMongoDBDataSource mongoDBDataSource) {
         try {
             //TODO use check
             final JsonObject body = message.body();
@@ -77,9 +76,7 @@ public class POMMetadataWorkerVerticle extends BusModBase {
             String status = body.getString("status");
 
             ArtifactDocumentKey artifactDocumentKey = new ArtifactDocumentKey(org, name, version, status);
-            final POMExportService
-                    pomExportService = new POMExportService(
-                    new BasicMongoDBDataSource(mongoHost, mongoPort, mongoDbName));
+            final POMExportService pomExportService = new POMExportService(mongoDBDataSource);
             StringWriter stringWriter = new StringWriter();
             pomExportService.exportPomFile(stringWriter, artifactDocumentKey);
             message.reply(stringWriter.toString());
