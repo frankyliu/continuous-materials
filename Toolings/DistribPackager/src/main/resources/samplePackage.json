@@ -1,0 +1,20 @@
+{
+    "distrib": [
+
+        {
+            "name": "fr.soleil.gui:Zouk:latest",
+            "mainClasspath": "Scienta.ScientaPanel",
+            "templateFilePath": "src/main/template/linux/zouk.vm",
+            "fileName": "zouk", //optional
+            "outputDirectory": "bin/linux"
+
+        },
+
+        {
+            "name":"fr.soleil.gui:Tumba:latest",
+            "mainClasspath":"fr.soleil.tumba.Tumba"
+        }
+
+    ]
+
+}

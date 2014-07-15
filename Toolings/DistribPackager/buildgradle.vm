@@ -1,0 +1,14 @@
+apply plugin:'base'
+
+configurations {
+  distLib
+}
+
+dependencies {
+ #foreach($component in $components)
+     distLib "${component}"
+ #end
+}
+
+
+
