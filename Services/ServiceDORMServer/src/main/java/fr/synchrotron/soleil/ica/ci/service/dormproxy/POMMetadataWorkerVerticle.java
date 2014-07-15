@@ -81,11 +81,9 @@ public class POMMetadataWorkerVerticle extends BusModBase {
             pomExportService.exportPomFile(stringWriter, artifactDocumentKey);
             message.reply(stringWriter.toString());
         } catch (NoDocumentException nse) {
-            logger.error("error", nse);
             message.fail(0, "Artifact doesn't exist.");
         } catch (Throwable t) {
             logger.error("error", t);
-            // t.printStackTrace();
             message.fail(-1, t.getMessage());
         }
     }
