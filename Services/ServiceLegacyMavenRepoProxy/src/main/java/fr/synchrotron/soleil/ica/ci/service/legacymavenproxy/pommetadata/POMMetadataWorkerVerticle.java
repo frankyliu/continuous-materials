@@ -33,16 +33,18 @@ public class POMMetadataWorkerVerticle extends BusModBase {
         final Integer mongoPort = getMandatoryIntConfig("mongoPort");
         final String mongoDbName = getMandatoryStringConfig("mongoDbName");
 
+        final BasicMongoDBDataSource mongoDBDatasource = new BasicMongoDBDataSource(mongoHost, mongoPort, mongoDbName);
+
         eb.registerHandler(ServiceAddressRegistry.EB_ADDRESS_POMMETADATA_SERVICE, new Handler<Message<JsonObject>>() {
             @Override
             public void handle(Message<JsonObject> message) {
                 String action = message.body().getString("action");
                 switch (action) {
                     case ACTION_FIXWRONGVALUE:
-                        fixPom(message, mongoHost, mongoPort, mongoDbName);
+                        fixPom(message, mongoDBDatasource);
                         break;
                     case ACTION_STORE:
-                        importPom(message, mongoHost, mongoPort, mongoDbName);
+                        importPom(message, mongoDBDatasource);
                         break;
                     case ACTION_CACHE:
                         putPomInCache(vertx, message);
@@ -62,12 +64,13 @@ public class POMMetadataWorkerVerticle extends BusModBase {
         message.reply(pomContent);
     }
 
-    private void fixPom(Message<JsonObject> message, String mongoHost, int mongoPort, String mongoDbName) {
+    private void fixPom(Message<JsonObject> message, BasicMongoDBDataSource mongoDBDatasource) {
         try {
             String pomContent = message.body().getString("content");
+
             final MavenPomFixer mavenPomFixer =
                     new MavenPomFixer(new MongoDBArtifactRepository(
-                            new BasicMongoDBDataSource(mongoHost, mongoPort, mongoDbName)));
+                            mongoDBDatasource));
             final Model resolvedPomModel = mavenPomFixer.getModelWithResolvedParent(pomContent);
             StringWriter stringWriter = new StringWriter();
             new MavenXpp3Writer().write(stringWriter, resolvedPomModel);
@@ -79,12 +82,11 @@ public class POMMetadataWorkerVerticle extends BusModBase {
         }
     }
 
-    private void importPom(Message<JsonObject> message, String mongoHost, int mongoPort, String mongoDbName) {
+    private void importPom(Message<JsonObject> message, BasicMongoDBDataSource mongoDBDataSource) {
         try {
             String pomContent = message.body().getString("content");
             final POMImportService pomImportService = new POMImportService(
-                    new SoleilDictionary(),
-                    new BasicMongoDBDataSource(mongoHost, mongoPort, mongoDbName));
+                    new SoleilDictionary(), mongoDBDataSource);
             pomImportService.importPomFile(pomContent, new DefaultWorkflow());
             message.reply();
         } catch (Throwable e) {
