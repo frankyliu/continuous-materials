@@ -200,4 +200,10 @@ project(':Applications/ApplicationMavenRepoIndexer') {
     }
 }
 
-
+project(':Toolings/DistribPackager') {
+    dependencies {
+        compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+        compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+        compile "org.apache.velocity:velocity:1.7"
+    }
+}
