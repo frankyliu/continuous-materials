@@ -6,6 +6,8 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
+import org.gradle.tooling.GradleConnector;
+import org.gradle.tooling.ProjectConnection;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,14 +15,25 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Administrateur on 15/07/14.
- */
 public class Main {
 
     public static void main(String[] args) throws IOException {
         Main main = new Main();
-        main.process();
+        main.testExecuteGradleBuild();
+    }
+
+    private void testExecuteGradleBuild() {
+        GradleConnector gradleConnector = GradleConnector.newConnector();
+        gradleConnector.useInstallation(new File("C:\\Integ\\gradle-1.11"));
+        gradleConnector.useInstallation(new File("C:\\Integ\\gradle-1.11"));
+        gradleConnector.forProjectDirectory(new File("C:\\Dev\\Test\\gradle\\Packaging"));
+        ProjectConnection connection = gradleConnector.connect();
+        try {
+            connection.newBuild().forTasks("printClasspath").run();
+        } finally {
+            connection.close();
+        }
+
     }
 
     private void process() throws IOException {
@@ -42,7 +55,7 @@ public class Main {
         VelocityEngine velocityEngine = new VelocityEngine();
         Velocity.setProperty("runtime.log", "target/velocity.log");
         velocityEngine.init();
-        File templateFile = new File("buildgradle.vm");
+        File templateFile = new File("build.gradle.vm");
         Template template = velocityEngine.getTemplate(templateFile.getPath(), "UTF-8");
         VelocityContext velocityContext = new VelocityContext();
         StringWriter resultWriter = new StringWriter();

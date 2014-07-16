@@ -1,5 +1,8 @@
 package fr.synchrotron.soleil.ica.ci.tooling.distribpackager;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by Administrateur on 15/07/14.
  */
@@ -13,15 +16,9 @@ public class DistribComponent {
             "outputDirectory": "bin/linux"
      */
 
-    private String name;
     private String mainClasspath;
-    private String templateFilePath;
-    private String fileName;
-    private String outputDirectory;
-
-    public DistribComponent(){
-
-    }
+    private String name;
+    private List<PlatformObj> platforms;
 
     public String getName() {
         return name;
@@ -29,6 +26,20 @@ public class DistribComponent {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    private Map<String, Object> extraOptions;
+
+    public DistribComponent(){
+
+    }
+
+    public List<PlatformObj> getPlatforms() {
+        return platforms;
+    }
+
+    public void setPlatforms(List<PlatformObj> platforms) {
+        this.platforms = platforms;
     }
 
     public String getMainClasspath() {
@@ -39,38 +50,20 @@ public class DistribComponent {
         this.mainClasspath = mainClasspath;
     }
 
-    public String getTemplateFilePath() {
-        return templateFilePath;
+     public Map<String, Object> getExtraOptions() {
+        return extraOptions;
     }
 
-    public void setTemplateFilePath(String templateFilePath) {
-        this.templateFilePath = templateFilePath;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public String getOutputDirectory() {
-        return outputDirectory;
-    }
-
-    public void setOutputDirectory(String outputDirectory) {
-        this.outputDirectory = outputDirectory;
+    public void setExtraOptions(Map<String, Object> extraOptions) {
+        this.extraOptions = extraOptions;
     }
 
     @Override
     public String toString() {
         return "DistribComponent{" +
-                "name='" + name + '\'' +
-                ", mainClasspath='" + mainClasspath + '\'' +
-                ", templateFilePath='" + templateFilePath + '\'' +
-                ", fileName='" + fileName + '\'' +
-                ", outputDirectory='" + outputDirectory + '\'' +
+                "mainClasspath='" + mainClasspath + '\'' +
+                ", platforms=" + platforms +
+                ", extraOptions=" + extraOptions +
                 '}';
     }
 }
