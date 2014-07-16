@@ -34,6 +34,7 @@ public class SampleVerticle extends Verticle {
                 });
             }
         });
+
         server.setAcceptBacklog(10000);
         server.setSendBufferSize(4 * 1024);
         server.setReceiveBufferSize(4 * 1024);
