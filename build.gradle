@@ -205,5 +205,8 @@ project(':Toolings/DistribPackager') {
         compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
         compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
         compile "org.apache.velocity:velocity:1.7"
+
+        compile gradleApi()
+
     }
 }
