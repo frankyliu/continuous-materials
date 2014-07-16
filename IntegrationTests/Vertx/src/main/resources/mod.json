@@ -1,0 +1,9 @@
+{
+    "main": "fr.synchrotron.soleil.ica.ci.test.vertx.sample.DeployerVerticle",
+    "description": "A Sample Vertx Server",
+    "licenses": ["MIT license"],
+    "author": "Gregory Boissinot",
+    "developers": ["Gregory Boissinot"],
+    "keywords": ["server", "proxy", "http", "vert.x"],
+    "homepage": "https://github.com/synchrotron-soleil-ica/continuous-materials"
+}

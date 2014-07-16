@@ -1,0 +1,5 @@
+main class:org.vertx.java.platform.impl.cli.Starter
+program parameters:
+run
+run fr.synchrotron.soleil.ica.ci.test.vertx.sample.DeployerVerticle
+-Dorg.vertx.logger-delegate-factory-class-name=org.vertx.java.core.logging.impl.Log4jLogDelegateFactory
