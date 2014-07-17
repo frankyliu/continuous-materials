@@ -201,12 +201,17 @@ project(':Applications/ApplicationMavenRepoIndexer') {
 }
 
 project(':Toolings/DistribPackager') {
+
+    apply plugin: 'application'
+
     dependencies {
         compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
         compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
         compile "org.apache.velocity:velocity:1.7"
         compile gradleApi()
     }
+
+    mainClassName = "fr.synchrotron.soleil.ica.ci.tooling.distribpackager.Main"
 }
 
 //-- Integration Tests

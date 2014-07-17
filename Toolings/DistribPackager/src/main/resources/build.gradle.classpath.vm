@@ -1,0 +1,35 @@
+apply plugin:'base'
+
+repositories {
+ mavenCentral()
+}
+
+configurations {
+  distLib
+}
+
+dependencies {
+ #foreach($component in $components)
+     distLib "${component}"
+ #end
+}
+
+/*
+task printClasspath2
+printClasspath2.doLast {
+ configurations.distLib.each {
+    file('classpathResult.txt') << it
+    file('classpathResult.txt') << "\n"
+ }
+}
+*/
+
+task printClasspath
+printClasspath.doLast {
+configurations.distLib.resolvedConfiguration.resolvedArtifacts.each { art ->
+    def rd = art.resolvedDependency
+    //printf("%s\n", rd.name)
+    file('classpathResult.txt') << rd.name
+    file('classpathResult.txt') << "\n"
+ }
+}

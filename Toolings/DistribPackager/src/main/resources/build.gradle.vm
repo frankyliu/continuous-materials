@@ -1,5 +1,9 @@
 apply plugin:'base'
 
+repositories {
+ mavenCentral()
+}
+
 configurations {
   distLib
 }

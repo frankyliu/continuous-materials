@@ -2,12 +2,12 @@
     "distrib": [
 
         {
-            "name": "junit:junit:4.11",
+            "name": "fr.soleil.gui:Zouk:latest",
             "mainClasspath": "Scienta.ScientaPanel",
             "platforms": [
                 {
                     "os": "win32", //log only
-                    "templateFilePath": "src/main/template/windows/zouk.bat.vm",
+                    "templateFilePath": "src/main/template/win/zouk.bat.vm",
                     "outputDirectory": "bin/win",
                     "fileName": "zouk.bat" //optional
                 },
@@ -23,7 +23,14 @@
                 "titi": "val2",
                 "tutu": "val3"
             }
+        },
+
+
+        {
+            "name": "fr.soleil.gui:Tumba:latest",
+            "mainClasspath": "fr.soleil.tumba.Tumba"
         }
+
     ]
 
 }
