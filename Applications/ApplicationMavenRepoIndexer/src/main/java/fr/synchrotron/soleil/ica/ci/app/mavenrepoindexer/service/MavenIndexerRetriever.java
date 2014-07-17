@@ -67,14 +67,14 @@ public class MavenIndexerRetriever {
         Date centralContextCurrentTimestamp = centralContext.getTimestamp();
         IndexUpdateRequest updateRequest = new IndexUpdateRequest(centralContext, resourceFetcher);
         IndexUpdateResult updateResult = indexUpdater.fetchAndUpdateIndex(updateRequest);
-        if (updateResult.isFullUpdate()) {
-            System.out.println("Full update happened!");
-        } else if (updateResult.getTimestamp().equals(centralContextCurrentTimestamp)) {
-            System.out.println("No update needed, index is up to date!");
-        } else {
-            System.out.println("Incremental update happened, change covered " + centralContextCurrentTimestamp
-                    + " - " + updateResult.getTimestamp() + " period.");
-        }
+//        if (updateResult.isFullUpdate()) {
+//            System.out.println("Full update happened!");
+//        } else if (updateResult.getTimestamp().equals(centralContextCurrentTimestamp)) {
+//            System.out.println("No update needed, index is up to date!");
+//        } else {
+//            System.out.println("Incremental update happened, change covered " + centralContextCurrentTimestamp
+//                    + " - " + updateResult.getTimestamp() + " period.");
+//        }
 
         System.out.println();
         return centralContext;
