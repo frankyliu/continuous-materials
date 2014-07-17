@@ -1,8 +1,8 @@
-{"_id" : { "org" : "org1", "name" : "name1", "type" : "binary", "status" : "BUILD"},"value" : "1.7.BUILD"}
-{"_id" : { "org" : "org1", "name" : "name1", "type" : "binary", "status" : "INTEGRATION"},"value" : "1.6.INTEGRATION"}
-{"_id" : { "org" : "org1", "name" : "name1", "type" : "binary", "status" : "RELEASE"},"value" : "1.5.RELEASE"}
+{"_id" : { "org" : "org1", "name" : "name1", "type" : "primary", "status" : "BUILD"},"value" : "1.7.BUILD"}
+{"_id" : { "org" : "org1", "name" : "name1", "type" : "primary", "status" : "INTEGRATION"},"value" : "1.6.INTEGRATION"}
+{"_id" : { "org" : "org1", "name" : "name1", "type" : "primary", "status" : "RELEASE"},"value" : "1.5.RELEASE"}
 
-{"_id" : { "org" : "org2", "name" : "name2", "type" : "binary", "status" : "INTEGRATION"},"value" : "1.6.INTEGRATION"}
-{"_id" : { "org" : "org2", "name" : "name2", "type" : "binary", "status" : "RELEASE"},"value" : "1.5.RELEASE"}
+{"_id" : { "org" : "org2", "name" : "name2", "type" : "primary", "status" : "INTEGRATION"},"value" : "1.6.INTEGRATION"}
+{"_id" : { "org" : "org2", "name" : "name2", "type" : "primary", "status" : "RELEASE"},"value" : "1.5.RELEASE"}
 
-{"_id" : { "org" : "org3", "name" : "name3", "type" : "binary", "status" : "RELEASE"},"value" : "1.5.RELEASE"}
+{"_id" : { "org" : "org3", "name" : "name3", "type" : "primary", "status" : "RELEASE"},"value" : "1.5.RELEASE"}

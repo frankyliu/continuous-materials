@@ -87,7 +87,7 @@ public class ArtifactVersionResolverService {
         String latestVersion = null;
         String curStatus = workflow.getNormalizedStatus(status);
         while (latestVersion == null && curStatus != null) {
-            latestVersion = latestArtifactRepository.getLatestVersion(org, name, "binary", curStatus);
+            latestVersion = latestArtifactRepository.getLatestVersion(org, name, "primary", curStatus);
             curStatus = workflow.getNextStatusLabel(curStatus);
         }
 
