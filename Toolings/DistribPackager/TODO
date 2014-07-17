@@ -1,6 +1,0 @@
-- Choose the right package descriptor
-- Parse it
-- Generate the appropriate build.gradle from a template
-
-Notes
-Conserve Velocity for templating

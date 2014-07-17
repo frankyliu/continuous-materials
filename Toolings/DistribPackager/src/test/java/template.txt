@@ -1,4 +1,0 @@
-SET CLASSPATH=%TANGO_JAVA_ROOT%\\${project.ArtifactId}-${project.Version}.jar;%CLASSPATH%
-#foreach( $dependency in $dependencies )
-set CLASSPATH=%CLASSPATH%;%TANGO_JAVA_ROOT%\\${dependency.ArtifactId}-${dependency.Version}.jar
-#end
