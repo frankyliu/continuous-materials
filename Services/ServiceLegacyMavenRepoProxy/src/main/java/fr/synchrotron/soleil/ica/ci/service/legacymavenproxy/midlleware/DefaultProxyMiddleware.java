@@ -83,6 +83,7 @@ public class DefaultProxyMiddleware implements ProxyMiddleware {
             case POM:
                 uploadPom(context);
                 break;
+            case POMSHA1:
             case ANY:
                 ProxyService proxyService = new ProxyService();
                 proxyService.makePushRequestAndRespond(context);
