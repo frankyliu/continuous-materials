@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'maven-publish'
 
-mainClassName = "fr.synchrotron.soleil.ica.ci.app.mavenrepoimporter.launch.AppMain"
+mainClassName = "fr.synchrotron.soleil.ica.ci.app.mavenrepoindexer.launch.AppMain"
 
 dependencies {
     compile "org.springframework:spring-core:3.2.5.RELEASE"
