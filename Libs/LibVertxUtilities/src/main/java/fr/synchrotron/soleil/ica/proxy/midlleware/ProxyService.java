@@ -96,7 +96,7 @@ public class ProxyService {
             }
         });
 
-        vertxHttpClientRequest.setChunked(true);
+        //vertxHttpClientRequest.setChunked(true);
         final Pump pump = Pump.createPump(request, vertxHttpClientRequest);
         pump.start();
         request.resume();

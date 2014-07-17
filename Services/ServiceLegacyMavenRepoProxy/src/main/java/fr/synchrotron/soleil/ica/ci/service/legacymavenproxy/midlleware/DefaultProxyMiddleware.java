@@ -135,7 +135,7 @@ public class DefaultProxyMiddleware implements ProxyMiddleware {
             }
         });
 
-        vertxHttpClientRequest.setChunked(true);
+        //vertxHttpClientRequest.setChunked(true);
         vertxHttpClientRequest.headers().set(request.headers());
         vertxHttpClientRequest.exceptionHandler(new Handler<Throwable>() {
             @Override
