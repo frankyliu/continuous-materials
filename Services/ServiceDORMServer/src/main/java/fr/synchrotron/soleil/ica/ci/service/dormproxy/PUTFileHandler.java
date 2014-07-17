@@ -29,7 +29,7 @@ public class PUTFileHandler implements Handler<HttpServerRequest> {
     public void handle(final HttpServerRequest request) {
 
         final String path = request.path();
-        logger.debug("archiving "+ path);
+        logger.debug("Archiving "+ path);
 
         String artifactPath = path.substring(proxyPath.length() + 1);
 

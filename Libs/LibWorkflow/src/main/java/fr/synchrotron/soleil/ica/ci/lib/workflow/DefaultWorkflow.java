@@ -31,6 +31,12 @@ public class DefaultWorkflow extends Workflow {
             return statusVersion;
         }
 
+        if (version.endsWith("." + DEFAULT_STATUS_RELEASE)) {
+            statusVersion.status = DEFAULT_STATUS_RELEASE;
+            statusVersion.version = version.substring(0, version.lastIndexOf("." + DEFAULT_STATUS_RELEASE));
+            return statusVersion;
+        }
+
         statusVersion.status = DEFAULT_STATUS_RELEASE;
         statusVersion.version = version;
         return statusVersion;

@@ -13,5 +13,7 @@ include 'Libs/LibWorkflow',
         'Services/ServiceMultiRepoProxy',
         'Applications/ApplicationMavenRepoIndexer',
         'Toolings/GradleDistribution',
-        'Toolings/DistribPackager'
+        'Toolings/DistribPackager',
+
+        'IntegrationTests/Vertx'
 
