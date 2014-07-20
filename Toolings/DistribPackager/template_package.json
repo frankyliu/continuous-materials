@@ -8,7 +8,7 @@
                 {
                     "os": "win32", //log only
                     "templateFilePath": "src/main/template/windows/zouk.bat.vm",
-                    "outputDirectory": "bin/win",
+                    "outputDirectory": "bin/windows",
                     "fileName": "zouk.bat" //optional
                 },
                 {

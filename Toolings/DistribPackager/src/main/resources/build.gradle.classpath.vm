@@ -14,16 +14,6 @@ dependencies {
  #end
 }
 
-/*
-task printClasspath2
-printClasspath2.doLast {
- configurations.distLib.each {
-    file('classpathResult.txt') << it
-    file('classpathResult.txt') << "\n"
- }
-}
-*/
-
 task printClasspath
 printClasspath.doLast {
 configurations.distLib.resolvedConfiguration.resolvedArtifacts.each { art ->

@@ -14,5 +14,9 @@ dependencies {
  #end
 }
 
-
-
+task distrib(type:Zip, description:'Bundle a distribution'){
+ into ('lib') {
+   from configurations.distLib
+ }
+ from 'build/generated'
+}
