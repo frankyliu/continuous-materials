@@ -18,6 +18,5 @@ task distrib(type:Zip, description:'Bundle a distribution'){
  into ('lib') {
    from configurations.distLib
  }
- from 'generated'
- from '../src/main/resources'
+ from 'build/generated'
 }
