@@ -88,7 +88,20 @@ public class POMResponseHandler extends DefaultClientResponseHandler {
                 request.response().headers().remove(HttpHeaders.TRANSFER_ENCODING);
                 ProxyService proxyService = new ProxyService();
                 proxyService.fixWarningCookieDomain(context, clientResponse);
-                endRequest();
+                final Buffer clientRepsonseBody = new Buffer();
+                clientResponse.dataHandler(new Handler<Buffer>() {
+                    @Override
+                    public void handle(final Buffer data) {
+                        clientRepsonseBody.appendBuffer(data);
+                    }
+                });
+                clientResponse.endHandler(new VoidHandler() {
+                    @Override
+                    protected void handle() {
+                        request.response().write(clientRepsonseBody);
+                        endRequest();
+                    }
+                });
             }
 
             private void sendPassThroughResponseWithoutContent(final HttpClientResponse clientResponse) {
@@ -98,7 +111,20 @@ public class POMResponseHandler extends DefaultClientResponseHandler {
                 request.response().headers().set(clientResponse.headers());
                 ProxyService proxyService = new ProxyService();
                 proxyService.fixWarningCookieDomain(context, clientResponse);
-                endRequest();
+                final Buffer clientRepsonseBody = new Buffer();
+                clientResponse.dataHandler(new Handler<Buffer>() {
+                    @Override
+                    public void handle(final Buffer data) {
+                        clientRepsonseBody.appendBuffer(data);
+                    }
+                });
+                clientResponse.endHandler(new VoidHandler() {
+                    @Override
+                    protected void handle() {
+                        request.response().write(clientRepsonseBody);
+                        endRequest();
+                    }
+                });
             }
 
         };
