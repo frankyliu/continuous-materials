@@ -2,7 +2,7 @@ package fr.synchrotron.soleil.ica.ci.tooling.distribpackager.service;
 
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.template.TemplateProcessor;
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.template.VelocityTemplateEngine;
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.exception.DistribException;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.exception.DistribPackagerException;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -37,7 +37,7 @@ public class GeneratorFileService {
             IOUtils.write(content, fileWriter);
 
         } catch (IOException ioe) {
-            throw new DistribException(ioe);
+            throw new DistribPackagerException(ioe);
         } finally {
             IOUtils.closeQuietly(fileWriter);
         }

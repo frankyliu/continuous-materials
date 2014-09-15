@@ -19,13 +19,13 @@ public class GradleTaskRunnerService {
 
     public void runTask(String taskName) {
 
-        if (taskName.isEmpty()) {
+        if (taskName == null || taskName.isEmpty()) {
             throw new NullPointerException("No task name to execute defined.");
         }
 
         GradleConnector gradleConnector = GradleConnector.newConnector();
-        gradleConnector.useInstallation(gradleConfig.getInstallationDir());
-        gradleConnector.forProjectDirectory(projectConfig.getProjectDir());
+        gradleConnector.useInstallation(gradleConfig.getInstallationDirFile());
+        gradleConnector.forProjectDirectory(projectConfig.getProjectDirFile());
         ProjectConnection connection = gradleConnector.connect();
         try {
             connection.newBuild().forTasks(taskName).run();

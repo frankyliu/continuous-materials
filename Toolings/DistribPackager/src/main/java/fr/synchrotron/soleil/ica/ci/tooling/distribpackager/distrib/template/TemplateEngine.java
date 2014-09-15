@@ -9,8 +9,6 @@ import java.util.Map;
  */
 public interface TemplateEngine {
 
-    //public String process(String inputFileName, Map<String, Object> params) throws Throwable;
-
     public String processTemplate(File templateInputFile, Map<String, Object> params) throws Throwable;
 
     public String processInternalTemplate(String templateInputFilePath, Map<String, Object> params) throws Throwable;

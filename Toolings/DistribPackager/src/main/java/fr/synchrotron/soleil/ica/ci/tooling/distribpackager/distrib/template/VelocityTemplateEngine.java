@@ -1,6 +1,6 @@
 package fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.template;
 
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.exception.DistribException;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.exception.DistribPackagerException;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -38,7 +38,7 @@ public class VelocityTemplateEngine implements TemplateEngine {
         try {
             template = velocityEngine.getTemplate(templateInputFile.getName(), "UTF-8");
         } catch (ResourceNotFoundException rne) {
-            throw new DistribException(rne);
+            throw new DistribPackagerException(rne);
         }
 
         //-- Make VelocityContext Engine
@@ -57,7 +57,7 @@ public class VelocityTemplateEngine implements TemplateEngine {
         InputStreamReader reader = new InputStreamReader(input);
 
         if (!velocityEngine.evaluate(velocityContext, resultWriter, templateInputFile.getName(), reader)) {
-            throw new DistribException("Failed to convert the template into html.");
+            throw new DistribPackagerException("Failed to convert the template into html.");
         }
 //        template.merge(velocityContext, resultWriter);
 
@@ -96,7 +96,7 @@ public class VelocityTemplateEngine implements TemplateEngine {
         try {
             template = velocityEngine.getTemplate(templateInputFilePath, "UTF-8");
         } catch (ResourceNotFoundException rne) {
-            throw new DistribException(rne);
+            throw new DistribPackagerException(rne);
         }
 
         //-- Make VelocityContext Engine
@@ -116,7 +116,7 @@ public class VelocityTemplateEngine implements TemplateEngine {
         InputStreamReader reader = new InputStreamReader(input);
 
         if (!velocityEngine.evaluate(velocityContext, resultWriter, templateInputFilePath, reader)) {
-            throw new DistribException("Failed to convert the template into html.");
+            throw new DistribPackagerException("Failed to convert the template into html.");
         }
 //        template.merge(velocityContext, resultWriter);
 

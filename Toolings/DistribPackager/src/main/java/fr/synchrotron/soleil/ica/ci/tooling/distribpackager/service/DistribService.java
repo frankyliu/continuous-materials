@@ -7,7 +7,8 @@ import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.DistribCompo
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.DistribObj;
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.PlatformObj;
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.gradle.DistribBuildFileGenerator;
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.exception.DistribException;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.exception.DistribPackagerException;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.gradle.GradleConfig;
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.part.classpath.ClasspathObj;
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.part.classpath.ComponentClasspathGenerator;
 
@@ -25,8 +26,11 @@ public class DistribService {
 
     private File workingDir;
 
-    public DistribService(File workingDir) {
+    private GradleConfig gradleConfig;
+
+    public DistribService(File workingDir, GradleConfig gradleConfig) {
         this.workingDir = workingDir;
+        this.gradleConfig = gradleConfig;
     }
 
     public DistribObj loadDescriptorFile(File packageDescriptorFile) {
@@ -40,7 +44,7 @@ public class DistribService {
         try {
             return objectMapper.readValue(packageDescriptorFile, DistribObj.class);
         } catch (IOException ioe) {
-            throw new DistribException(ioe);
+            throw new DistribPackagerException(ioe);
         }
     }
 
@@ -68,7 +72,7 @@ public class DistribService {
 
             List<PlatformObj> platforms = distribComponent.getPlatforms();
             if (platforms == null) {
-                throw new DistribException("You must specify platform profil to package.");
+                throw new DistribPackagerException("You must specify platform profil to package.");
             }
 
             for (PlatformObj platform : platforms) {
@@ -102,7 +106,8 @@ public class DistribService {
         final File outputDirecty = new File(workingDir + "/tmp/tmpGradleBuildClasspath/" + artifactId);
         outputDirecty.delete();
         outputDirecty.mkdirs();
-        ComponentClasspathGenerator componentClasspathGenerator = new ComponentClasspathGenerator(outputDirecty, "build.gradle");
+        ComponentClasspathGenerator componentClasspathGenerator =
+                new ComponentClasspathGenerator(outputDirecty.getAbsolutePath(), "build.gradle", gradleConfig);
         ClasspathObj classpathObjForComponent = componentClasspathGenerator.getClasspathObjForComponent(componentName);
         currentContext.put("project", classpathObjForComponent.getProject());
         currentContext.put("dependencies", classpathObjForComponent.getDependencies());

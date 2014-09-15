@@ -4,13 +4,13 @@ package fr.synchrotron.soleil.ica.ci.tooling.distribpackager.exception;
 /**
  * @author Gregory Boissinot
  */
-public class DistribException extends RuntimeException {
+public class DistribPackagerException extends RuntimeException {
 
-    public DistribException(String message) {
+    public DistribPackagerException(String message) {
         super(message);
     }
 
-    public DistribException(Throwable cause) {
+    public DistribPackagerException(Throwable cause) {
         super(cause);
     }
 

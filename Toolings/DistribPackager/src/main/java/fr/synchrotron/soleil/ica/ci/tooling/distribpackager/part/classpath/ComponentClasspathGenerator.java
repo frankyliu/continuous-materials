@@ -2,7 +2,7 @@ package fr.synchrotron.soleil.ica.ci.tooling.distribpackager.part.classpath;
 
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.template.TemplateProcessor;
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.template.VelocityTemplateEngine;
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.exception.DistribException;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.exception.DistribPackagerException;
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.gradle.GradleConfig;
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.gradle.GradleTaskRunnerService;
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.gradle.ProjectConfig;
@@ -17,14 +17,19 @@ import java.util.*;
 public class ComponentClasspathGenerator {
 
     private static final String CLASSPATH_GRADLE_BUILD_FILE = "build.gradle.classpath.vm";
+    private static final String TASK_NAME_PRINTCLASSPATH = "printClasspath";
 
-    private File outputDirecty;
+
+    private String outputDirecty;
 
     private String outputBuildFileName;
 
-    public ComponentClasspathGenerator(File outputDirecty, String outputBuildFieName) {
+    private GradleConfig gradleConfig;
+
+    public ComponentClasspathGenerator(String outputDirecty, String outputBuildFileName, GradleConfig gradleConfig) {
         this.outputDirecty = outputDirecty;
-        this.outputBuildFileName = outputBuildFieName;
+        this.outputBuildFileName = outputBuildFileName;
+        this.gradleConfig = gradleConfig;
     }
 
     public ClasspathObj getClasspathObjForComponent(String component) throws Throwable {
@@ -49,22 +54,20 @@ public class ComponentClasspathGenerator {
         System.out.println(content);
 
         try {
-            outputDirecty.mkdirs();
+            new File(outputDirecty).mkdirs();
             File file = new File(outputDirecty, outputBuildFileName);
             file.createNewFile();
             final FileWriter outputFileWriter = new FileWriter(file, false);
             IOUtils.write(content, outputFileWriter);
             outputFileWriter.close();
         } catch (IOException ioe) {
-            throw new DistribException(ioe);
+            throw new DistribPackagerException(ioe);
         }
 
         //-- 2. Run the build file
-        //TODO
-        GradleConfig gradleConfig = new GradleConfig(new File("/Users/gregory/Integ/gradle-1.11/"));
-        ProjectConfig projectConfig = new ProjectConfig(new File("build.gradle"), outputDirecty);
+        ProjectConfig projectConfig = new ProjectConfig("build.gradle", outputDirecty);
         GradleTaskRunnerService gradleTaskRunnerService = new GradleTaskRunnerService(gradleConfig, projectConfig);
-        gradleTaskRunnerService.runTask("printClasspath");
+        gradleTaskRunnerService.runTask(TASK_NAME_PRINTCLASSPATH);
 
         //--3. Extract the generated classpath from the gradle run
         String classpathContent = null;
@@ -89,7 +92,7 @@ public class ComponentClasspathGenerator {
             }
 
         } catch (IOException ioe) {
-            throw new DistribException(ioe);
+            throw new DistribPackagerException(ioe);
         }
 
         return classpathObjs;
