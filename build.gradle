@@ -16,6 +16,7 @@ project.ext {
     utils4jVersion = '0.7.0'
     commonsLangVersion = '2.6'
     commonsIoVersion = '2.4'
+    velocityVersion = '1.7'
 }
 
 subprojects {
@@ -202,16 +203,17 @@ project(':Applications/ApplicationMavenRepoIndexer') {
 
 project(':Toolings/DistribPackager') {
 
-    apply plugin: 'application'
+    apply plugin : 'java'
+    apply plugin : 'groovy'
 
     dependencies {
         compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
         compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-        compile "org.apache.velocity:velocity:1.7"
+        compile "org.apache.velocity:velocity:$velocityVersion"
         compile gradleApi()
+        compile localGroovy()
     }
 
-    mainClassName = "fr.synchrotron.soleil.ica.ci.tooling.distribpackager.Main"
 }
 
 //-- Integration Tests
