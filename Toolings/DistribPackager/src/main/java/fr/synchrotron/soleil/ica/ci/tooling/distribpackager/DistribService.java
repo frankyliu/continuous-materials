@@ -1,14 +1,15 @@
-package fr.synchrotron.soleil.ica.ci.tooling.distribpackager.service;
+package fr.synchrotron.soleil.ica.ci.tooling.distribpackager;
 
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.DistribComponent;
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.DistribObj;
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.PlatformObj;
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.gradle.DistribBuildFileGenerator;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.domain.PackageConfig;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.engine.gradle.DistribBuildFileGenerator;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.domain.template.DistribComponent;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.domain.template.DistribObj;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.domain.template.PlatformObj;
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.exception.DistribPackagerException;
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.gradle.GradleConfig;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.domain.gradle.GradleConfig;
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.part.classpath.ClasspathObj;
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.part.classpath.ComponentClasspathGenerator;
 
@@ -24,16 +25,18 @@ import java.util.Map;
  */
 public class DistribService {
 
-    private File workingDir;
+    private final PackageConfig packageConfig;
 
-    private GradleConfig gradleConfig;
-
-    public DistribService(File workingDir, GradleConfig gradleConfig) {
-        this.workingDir = workingDir;
-        this.gradleConfig = gradleConfig;
+    public DistribService(PackageConfig packageConfig) {
+        this.packageConfig = packageConfig;
     }
 
-    public DistribObj loadDescriptorFile(File packageDescriptorFile) {
+    public void makePackage() throws Throwable {
+        final DistribObj distribObj = loadDescriptorFile(packageConfig.getPackageDescriptorFile());
+        process(distribObj);
+    }
+
+    private DistribObj loadDescriptorFile(File packageDescriptorFile) {
 
         if (packageDescriptorFile == null) {
             throw new NullPointerException("A package Descriptor File is required.");
@@ -48,7 +51,7 @@ public class DistribService {
         }
     }
 
-    public void process(DistribObj distribObj) throws Throwable {
+    private void process(DistribObj distribObj) throws Throwable {
 
         //--1. Mapping each file
         List<DistribComponent> distrib = distribObj.getDistrib();
@@ -83,7 +86,7 @@ public class DistribService {
 
                 GeneratorFileService service = new GeneratorFileService();
                 //TODO rename in outputDirectoryName
-                File outputDirTemplateFile = new File(workingDir + "/generated", platform.getOutputDirectory());
+                File outputDirTemplateFile = new File(packageConfig.getOutputDirFile().getAbsolutePath() + "/generated", platform.getOutputDirectory());
                 service.generate(
                         new File(platform.getTemplateFilePath()),
                         currentContext,
@@ -98,17 +101,22 @@ public class DistribService {
         generateDistribGradleBuildFile(distribObj);
     }
 
-    private void computeCurrentComponent(String componentName, Map<String, Object> currentContext) throws Throwable {
+    private void computeCurrentComponent(String componentName, Map<String, Object> currentContext) throws DistribPackagerException {
 
         String[] parts = componentName.split(":");
         String artifactId = parts[1];
         //TODO
-        final File outputDirecty = new File(workingDir + "/tmp/tmpGradleBuildClasspath/" + artifactId);
+        final File outputDirecty = new File(packageConfig.getOutputDirFile().getAbsolutePath() + "/tmp/tmpGradleBuildClasspath/" + artifactId);
         outputDirecty.delete();
         outputDirecty.mkdirs();
         ComponentClasspathGenerator componentClasspathGenerator =
-                new ComponentClasspathGenerator(outputDirecty.getAbsolutePath(), "build.gradle", gradleConfig);
-        ClasspathObj classpathObjForComponent = componentClasspathGenerator.getClasspathObjForComponent(componentName);
+                new ComponentClasspathGenerator(outputDirecty.getAbsolutePath(), "build.gradle", new GradleConfig(packageConfig.getGradleInstallationDirFile().getAbsolutePath()));
+        ClasspathObj classpathObjForComponent = null;
+        try {
+            classpathObjForComponent = componentClasspathGenerator.getClasspathObjForComponent(componentName);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         currentContext.put("project", classpathObjForComponent.getProject());
         currentContext.put("dependencies", classpathObjForComponent.getDependencies());
 
@@ -120,7 +128,7 @@ public class DistribService {
         for (DistribComponent distribComponent : distrib) {
             componentNameList.add(distribComponent.getName());
         }
-        DistribBuildFileGenerator distribBuildFileGenerator = new DistribBuildFileGenerator(workingDir, "build.gradle");
+        DistribBuildFileGenerator distribBuildFileGenerator = new DistribBuildFileGenerator(packageConfig.getOutputDirFile(), "build.gradle");
         distribBuildFileGenerator.generate(componentNameList);
     }
 }

@@ -1,10 +1,7 @@
 package fr.synchrotron.soleil.ica.ci.tooling.distribpackager;
 
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.DistribObj;
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.gradle.GradleConfig;
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.service.DistribService;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.domain.PackageConfig;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -14,16 +11,13 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        //TODO check
         String outputDirPath = args[0];
         String packageDescFilePath = args[1];
         String gradleInstallationDir = args[3];
 
         try {
-            DistribService distribService = new DistribService(new File(outputDirPath), new GradleConfig(gradleInstallationDir));
-            final File packageDescriptorFile = new File(packageDescFilePath);
-            final DistribObj distribObj = distribService.loadDescriptorFile(packageDescriptorFile);
-            distribService.process(distribObj);
+            DistribService distribService = new DistribService(new PackageConfig(packageDescFilePath, outputDirPath, gradleInstallationDir));
+            distribService.makePackage();
         } catch (Throwable e) {
             e.printStackTrace();
         }

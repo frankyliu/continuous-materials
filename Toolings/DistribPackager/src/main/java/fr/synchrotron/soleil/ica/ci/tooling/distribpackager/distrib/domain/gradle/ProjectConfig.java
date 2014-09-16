@@ -1,4 +1,4 @@
-package fr.synchrotron.soleil.ica.ci.tooling.distribpackager.gradle;
+package fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.domain.gradle;
 
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.exception.DistribPackagerException;
 

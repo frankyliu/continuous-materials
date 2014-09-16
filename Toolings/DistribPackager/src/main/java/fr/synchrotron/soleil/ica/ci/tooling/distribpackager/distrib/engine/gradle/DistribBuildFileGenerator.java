@@ -1,8 +1,8 @@
-package fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.gradle;
+package fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.engine.gradle;
 
 
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.template.TemplateProcessor;
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.template.VelocityTemplateEngine;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.engine.template.TemplateProcessor;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.engine.template.VelocityTemplateEngine;
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.exception.DistribPackagerException;
 import org.apache.commons.io.IOUtils;
 
@@ -34,8 +34,8 @@ public class DistribBuildFileGenerator {
         Map<String, Object> params = new HashMap<>();
         params.put("components", componentNameList);
         TemplateProcessor templateProcessor = new TemplateProcessor(new VelocityTemplateEngine());
-        String content = templateProcessor.processInternalTemplate(DISTRIB_GRADLE_BUILD_FILE, params);
-        System.out.println(content);
+        String content = templateProcessor.processTemplate(new File(DISTRIB_GRADLE_BUILD_FILE), params);
+        //System.out.println(content);
 
         FileWriter fileWriter = null;
         try {

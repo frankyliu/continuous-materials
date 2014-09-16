@@ -1,4 +1,4 @@
-package fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib;
+package fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.domain.template;
 
 import java.util.List;
 import java.util.Map;

@@ -1,7 +1,7 @@
-package fr.synchrotron.soleil.ica.ci.tooling.distribpackager.service;
+package fr.synchrotron.soleil.ica.ci.tooling.distribpackager;
 
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.template.TemplateProcessor;
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.template.VelocityTemplateEngine;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.engine.template.TemplateProcessor;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.engine.template.VelocityTemplateEngine;
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.exception.DistribPackagerException;
 import org.apache.commons.io.IOUtils;
 

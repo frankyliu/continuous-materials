@@ -1,5 +1,7 @@
-package fr.synchrotron.soleil.ica.ci.tooling.distribpackager.gradle;
+package fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.engine.gradle;
 
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.domain.gradle.GradleConfig;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.domain.gradle.ProjectConfig;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
 
@@ -8,9 +10,9 @@ import org.gradle.tooling.ProjectConnection;
  */
 public class GradleTaskRunnerService {
 
-    private GradleConfig gradleConfig;
+    private final GradleConfig gradleConfig;
 
-    private ProjectConfig projectConfig;
+    private final ProjectConfig projectConfig;
 
     public GradleTaskRunnerService(GradleConfig gradleConfig, ProjectConfig projectConfig) {
         this.gradleConfig = gradleConfig;

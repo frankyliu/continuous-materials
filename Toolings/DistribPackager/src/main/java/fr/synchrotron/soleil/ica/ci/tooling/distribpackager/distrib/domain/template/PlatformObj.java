@@ -1,14 +1,14 @@
-package fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib;
+package fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.domain.template;
 
 /**
  * @author Gregory Boissinot
  */
 public class PlatformObj {
+
     private String os;
     private String templateFilePath;
     private String fileName;
     private String outputDirectory;
-
 
     public PlatformObj() {
     }

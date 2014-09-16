@@ -14,12 +14,11 @@ dependencies {
  #end
 }
 
-task printClasspath
-printClasspath.doLast {
-configurations.distLib.resolvedConfiguration.resolvedArtifacts.each { art ->
-    def rd = art.resolvedDependency
-    //printf("%s\n", rd.name)
-    file('classpathResult.txt') << rd.name
-    file('classpathResult.txt') << "\n"
- }
+task printClasspath <<{
+    configurations.distLib.resolvedConfiguration.resolvedArtifacts.each {
+        art ->
+            def rd = art.resolvedDependency
+            file('classpathResult.txt') << rd.name
+            file('classpathResult.txt') << "\n"
+    }
 }
