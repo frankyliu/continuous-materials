@@ -206,14 +206,20 @@ project(':Toolings/DistribPackager') {
     apply plugin : 'java'
     apply plugin : 'groovy'
 
+    configurations {
+        gradleLibs
+        compile {
+            extendsFrom gradleLibs
+        }
+    }
+
     dependencies {
+        gradleLibs gradleApi()
+        gradleLibs localGroovy()
         compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
         compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
         compile "org.apache.velocity:velocity:$velocityVersion"
-        compile gradleApi()
-        compile localGroovy()
     }
-
 }
 
 //-- Integration Tests
