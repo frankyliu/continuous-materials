@@ -3,7 +3,7 @@ apply plugin: 'java'
 defaultTasks 'distInitDir'
 
 ext {
-    gradleVersion = '1.11'
+    gradleVersion = '2.1'
     gradleDownloadBase = "http://services.gradle.org/distributions"
 }
 
@@ -17,7 +17,15 @@ configurations {
 dependencies {
     initDir project(':Libs/LibMongoLatestVersionResolver')
     initDir project(':Libs/LibMongoUtilities')
+    initDir(project(':Toolings/DistribPackager')) {
+        transitive = false
+    }
     initDir "org.mongodb:mongo-java-driver:$mongoJavaDriverVerison"
+
+
+    initDir "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+    initDir "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+    initDir "org.apache.velocity:velocity:$velocityVersion"
 }
 
 task buildInitDir(type: Copy, dependsOn: jar) {
