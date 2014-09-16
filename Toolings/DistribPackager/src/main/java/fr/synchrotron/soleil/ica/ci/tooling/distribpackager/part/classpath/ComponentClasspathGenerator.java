@@ -49,8 +49,7 @@ public class ComponentClasspathGenerator {
         Map<String, Object> params = new HashMap<>();
         params.put("components", Arrays.asList(new String[]{fullComponentName}));
         TemplateProcessor templateProcessor = new TemplateProcessor(new VelocityTemplateEngine());
-        String content = templateProcessor.processTemplate(new File(this.getClass().getResource("/" + CLASSPATH_GRADLE_BUILD_FILE).toURI()), params);
-//        System.out.println(content);
+        String content = templateProcessor.processTemplate(CLASSPATH_GRADLE_BUILD_FILE, params);
 
         try {
             new File(outputDirecty).mkdirs();

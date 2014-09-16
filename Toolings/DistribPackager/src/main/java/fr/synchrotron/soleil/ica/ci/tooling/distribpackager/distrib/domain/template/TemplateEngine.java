@@ -11,6 +11,8 @@ import java.util.Map;
  */
 public interface TemplateEngine {
 
-    public String processTemplate(File templateInputFile, Map<String, Object> params) throws DistribPackagerException;
+    public String processTemplate(String templateContent, Map<String, Object> params) throws DistribPackagerException;
+
+    public String processTemplate(File templateFile, Map<String, Object> params) throws DistribPackagerException;
 
 }

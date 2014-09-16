@@ -16,16 +16,21 @@ public class TemplateProcessor {
         this.templateEngine = templateEngine;
     }
 
-    public String processTemplate(File templateInputFile, Map<String, Object> params) throws Throwable{
+    public String processTemplate(String templateFileName, Map<String, Object> params) throws Throwable{
 
-        if (templateInputFile == null) {
-            throw new NullPointerException("An template inputFile is required.");
+        if (templateFileName == null) {
+            throw new NullPointerException("A template file name is required.");
         }
 
         if (params == null) {
             throw new NullPointerException("No parameter(s) set.");
         }
 
-        return templateEngine.processTemplate(templateInputFile, params);
+        return templateEngine.processTemplate(templateFileName, params);
     }
+
+    public String processTemplate(File templateFile, Map<String, Object> params) throws Throwable{
+        return templateEngine.processTemplate(templateFile, params);
+    }
+
 }
