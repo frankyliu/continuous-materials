@@ -14,20 +14,18 @@ class PackagerPlugin implements Plugin<Project> {
     void apply(Project project) {
         project.extensions.create("packageConfig", PackagingPluginExtension)
 
-        project.task('cleanPackage', type: Delete) {
+        project.task('cleanDistrib', type: Delete, description:'Clean the distribution output.') {
             delete "${project.packageConfig.outputDirPath}"
         }
 
-        project.task('clean').dependsOn('cleanPackage')
+//        project.task('clean').dependsOn('cleanPackage')
 
-        project.task('buildDistrib', type: PackagingTask)
+        project.task('buildDistrib', type: PackagingTask, description:'Build the distribution.')
 
-        project.task('makeDistrib', type: GradleBuild, dependsOn: 'buildDistrib') {
+        project.task('distrib', type: GradleBuild, dependsOn: 'buildDistrib') {
             buildFile = 'build/build.gradle'
             tasks << 'distrib'
         }
-
-        project.task('package', dependsOn: 'makeDistrib')
 
     }
 }

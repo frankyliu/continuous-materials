@@ -1,9 +1,8 @@
 apply from: 'build/build.gradle'
 
-task distrib(type:Zip, description:'Bundle custom distribution',overwrite: true){
-    into ('share/java') {
+task assemble(type: Zip, overwrite:true) {
+    into('share/java') {
         from configurations.distLib
-
     }
     from '/src/main/resources'
     from 'build/generated'
