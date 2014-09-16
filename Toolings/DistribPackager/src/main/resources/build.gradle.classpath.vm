@@ -1,7 +1,9 @@
 apply plugin:'base'
 
 repositories {
- mavenCentral()
+ maven {
+    url "http://mongodb-srv2.ica.synchrotron-soleil.fr:8090/legacy/"
+ }
 }
 
 configurations {

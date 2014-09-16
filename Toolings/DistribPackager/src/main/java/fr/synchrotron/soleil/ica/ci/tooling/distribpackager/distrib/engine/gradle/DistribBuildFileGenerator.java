@@ -34,7 +34,7 @@ public class DistribBuildFileGenerator {
         Map<String, Object> params = new HashMap<>();
         params.put("components", componentNameList);
         TemplateProcessor templateProcessor = new TemplateProcessor(new VelocityTemplateEngine());
-        String content = templateProcessor.processTemplate(new File(DISTRIB_GRADLE_BUILD_FILE), params);
+        String content = templateProcessor.processTemplate(new File(this.getClass().getResource("/" + DISTRIB_GRADLE_BUILD_FILE).toURI()), params);
         //System.out.println(content);
 
         FileWriter fileWriter = null;

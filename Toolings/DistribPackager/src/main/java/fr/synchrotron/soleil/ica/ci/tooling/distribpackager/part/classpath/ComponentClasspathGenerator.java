@@ -1,11 +1,11 @@
 package fr.synchrotron.soleil.ica.ci.tooling.distribpackager.part.classpath;
 
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.domain.gradle.GradleConfig;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.domain.gradle.ProjectConfig;
+import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.engine.gradle.GradleTaskRunnerService;
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.engine.template.TemplateProcessor;
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.engine.template.VelocityTemplateEngine;
 import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.exception.DistribPackagerException;
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.domain.gradle.GradleConfig;
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.engine.gradle.GradleTaskRunnerService;
-import fr.synchrotron.soleil.ica.ci.tooling.distribpackager.distrib.domain.gradle.ProjectConfig;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
@@ -49,7 +49,7 @@ public class ComponentClasspathGenerator {
         Map<String, Object> params = new HashMap<>();
         params.put("components", Arrays.asList(new String[]{fullComponentName}));
         TemplateProcessor templateProcessor = new TemplateProcessor(new VelocityTemplateEngine());
-        String content = templateProcessor.processTemplate(new File(CLASSPATH_GRADLE_BUILD_FILE), params);
+        String content = templateProcessor.processTemplate(new File(this.getClass().getResource("/" + CLASSPATH_GRADLE_BUILD_FILE).toURI()), params);
 //        System.out.println(content);
 
         try {

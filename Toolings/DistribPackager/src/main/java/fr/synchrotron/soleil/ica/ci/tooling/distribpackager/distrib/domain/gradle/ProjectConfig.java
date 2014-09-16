@@ -16,20 +16,20 @@ public class ProjectConfig {
 
     public ProjectConfig(String gradleBuildFileName, String projectDir) {
 
-        if (gradleBuildFileName == null) {
-            throw new DistribPackagerException("A gradle build file name is required.");
-        }
-        this.gradleBuildFile = new File(gradleBuildFileName);
-        if (!gradleBuildFile.exists()) {
-            throw new DistribPackagerException(String.format("The given Gradle build file '%s' doesn't exist.", gradleBuildFileName));
-        }
-
         if (projectDir == null) {
             throw new DistribPackagerException("A project directory is required.");
         }
         this.projectDirFile = new File(projectDir);
         if (!projectDirFile.exists()) {
             throw new DistribPackagerException(String.format("The project directory '%s' doesn't exist.", projectDir));
+        }
+
+        if (gradleBuildFileName == null) {
+            throw new DistribPackagerException("A gradle build file name is required.");
+        }
+        this.gradleBuildFile = new File(projectDirFile, gradleBuildFileName);
+        if (!gradleBuildFile.exists()) {
+            throw new DistribPackagerException(String.format("The given Gradle build file '%s' doesn't exist.", gradleBuildFileName));
         }
     }
 

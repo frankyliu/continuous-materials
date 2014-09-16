@@ -13,10 +13,11 @@ public class Main {
 
         String outputDirPath = args[0];
         String packageDescFilePath = args[1];
-        String gradleInstallationDir = args[3];
+        String gradleInstallationDir = args[2];
 
         try {
-            DistribService distribService = new DistribService(new PackageConfig(packageDescFilePath, outputDirPath, gradleInstallationDir));
+            PackageConfig packageConfig = new PackageConfig(packageDescFilePath, outputDirPath, gradleInstallationDir);
+            DistribService distribService = new DistribService(packageConfig);
             distribService.makePackage();
         } catch (Throwable e) {
             e.printStackTrace();
