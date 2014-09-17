@@ -25,7 +25,7 @@ dependencies {
 
     initDir "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
     initDir "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-    initDir "org.apache.velocity:velocity:$velocityVersion"
+    initDir "velocity:velocity:$velocityVersion"
 }
 
 task buildInitDir(type: Copy, dependsOn: jar) {

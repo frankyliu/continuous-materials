@@ -21,116 +21,112 @@ public class VelocityTemplateEngine implements TemplateEngine {
     @Override
     public String processTemplate(File templateInputFile, Map<String, Object> params) throws DistribPackagerException {
 
-        //- check parameters
-        if (templateInputFile == null) {
-            throw new NullPointerException("An template inputFile  is required.");
-        }
-
-        if (params == null) {
-            throw new NullPointerException("No parameter(s) set.");
-        }
-
-        VelocityEngine velocityEngine = new VelocityEngine();
-        velocityEngine.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, templateInputFile.getParent());
-
-        velocityEngine.init();
-
-        //-- Retrieve template
-        Template template;
+        String content = null;
         try {
-            template = velocityEngine.getTemplate(templateInputFile.getName(), "UTF-8");
-        } catch (ResourceNotFoundException rne) {
-            throw new DistribPackagerException(rne);
-        }
 
-        //-- Make VelocityContext Engine
-        VelocityContext velocityContext = new VelocityContext();
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
-            velocityContext.put(entry.getKey(), entry.getValue());
-        }
+            //- check parameters
+            if (templateInputFile == null) {
+                throw new NullPointerException("An template inputFile  is required.");
+            }
 
-        StringWriter resultWriter = new StringWriter();
+            if (params == null) {
+                throw new NullPointerException("No parameter(s) set.");
+            }
 
-        InputStream input = null;
-        try {
-            input = new FileInputStream(templateInputFile);
-        } catch (FileNotFoundException fne) {
-            throw new DistribPackagerException(fne);
-        }
-        if (input == null) {
-            throw new DistribPackagerException("Template file doesn't exist");
-        }
+            VelocityEngine velocityEngine = new VelocityEngine();
+            velocityEngine.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, templateInputFile.getParent());
+            velocityEngine.init();
 
-        InputStreamReader reader = new InputStreamReader(input);
+            //-- Retrieve template
+            Template template = velocityEngine.getTemplate(templateInputFile.getName(), "UTF-8");
 
-        if (!velocityEngine.evaluate(velocityContext, resultWriter, templateInputFile.getName(), reader)) {
-            throw new DistribPackagerException("Failed to convert the template into html.");
-        }
-        String content = resultWriter.toString();
+            //-- Make VelocityContext Engine
+            VelocityContext velocityContext = new VelocityContext();
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                velocityContext.put(entry.getKey(), entry.getValue());
+            }
 
-        resultWriter.flush();
-        try {
+            StringWriter resultWriter = new StringWriter();
+            InputStream input = new FileInputStream(templateInputFile);
+            if (input == null) {
+                throw new DistribPackagerException("Template file doesn't exist");
+            }
+
+            InputStreamReader reader = new InputStreamReader(input);
+
+            if (!velocityEngine.evaluate(velocityContext, resultWriter, templateInputFile.getName(), reader)) {
+                throw new DistribPackagerException("Failed to convert the template into html.");
+            }
+
+            content = resultWriter.toString();
+
+            resultWriter.flush();
+
             resultWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Throwable e) {
+            throw new DistribPackagerException(e);
         }
+
         return content;
     }
 
     @Override
     public String processTemplate(String templateFileName, Map<String, Object> params) throws DistribPackagerException {
 
-        //- check parameters
-        if (templateFileName == null) {
-            throw new NullPointerException("An template file name  is required.");
-        }
-
-        if (params == null) {
-            throw new NullPointerException("No parameter(s) set.");
-        }
-
-        VelocityEngine velocityEngine = new VelocityEngine();
-        velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-        velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
-
-
-        velocityEngine.init();
-
-        //-- Retrieve template
-        Template template;
+        String content = null;
         try {
-            template = velocityEngine.getTemplate(templateFileName, "UTF-8");
-        } catch (ResourceNotFoundException rne) {
-            throw new DistribPackagerException(rne);
-        }
+            //- check parameters
+            if (templateFileName == null) {
+                throw new NullPointerException("An template file name  is required.");
+            }
 
-        //-- Make VelocityContext Engine
-        VelocityContext velocityContext = new VelocityContext();
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
-            velocityContext.put(entry.getKey(), entry.getValue());
-        }
+            if (params == null) {
+                throw new NullPointerException("No parameter(s) set.");
+            }
 
-        StringWriter resultWriter = new StringWriter();
+            VelocityEngine velocityEngine = new VelocityEngine();
+            velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
+            velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
 
-        InputStream input = this.getClass().getClassLoader().getResourceAsStream(templateFileName);
-        if (input == null) {
-            throw new DistribPackagerException("Template file doesn't exist");
-        }
 
-        InputStreamReader reader = new InputStreamReader(input);
+            velocityEngine.init();
 
-        if (!velocityEngine.evaluate(velocityContext, resultWriter, templateFileName, reader)) {
-            throw new DistribPackagerException("Failed to convert the template into html.");
-        }
+            //-- Retrieve template
+            Template template;
+            try {
+                template = velocityEngine.getTemplate(templateFileName, "UTF-8");
+            } catch (ResourceNotFoundException rne) {
+                throw new DistribPackagerException(rne);
+            }
 
-        String content = resultWriter.toString();
+            //-- Make VelocityContext Engine
+            VelocityContext velocityContext = new VelocityContext();
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                velocityContext.put(entry.getKey(), entry.getValue());
+            }
 
-        resultWriter.flush();
-        try {
+            StringWriter resultWriter = new StringWriter();
+
+            InputStream input = this.getClass().getClassLoader().getResourceAsStream(templateFileName);
+            if (input == null) {
+                throw new DistribPackagerException("Template file doesn't exist");
+            }
+
+            InputStreamReader reader = new InputStreamReader(input);
+
+            if (!velocityEngine.evaluate(velocityContext, resultWriter, templateFileName, reader)) {
+                throw new DistribPackagerException("Failed to convert the template into html.");
+            }
+
+            content = resultWriter.toString();
+
+            resultWriter.flush();
+
             resultWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Throwable e) {
+            throw new DistribPackagerException(e);
         }
+
         return content;
     }
 

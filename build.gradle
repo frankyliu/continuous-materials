@@ -16,7 +16,7 @@ project.ext {
     utils4jVersion = '0.7.0'
     commonsLangVersion = '2.6'
     commonsIoVersion = '2.4'
-    velocityVersion = '1.7'
+    velocityVersion = '1.4'
 }
 
 subprojects {
@@ -218,7 +218,7 @@ project(':Toolings/DistribPackager') {
         gradleLibs localGroovy()
         compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
         compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-        compile "org.apache.velocity:velocity:$velocityVersion"
+        compile "velocity:velocity:$velocityVersion"
     }
 }
 
