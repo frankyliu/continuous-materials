@@ -4,6 +4,8 @@ import fr.synchrotron.soleil.ica.proxy.midlleware.MiddlewareContext;
 import fr.synchrotron.soleil.ica.proxy.midlleware.ProxyService;
 import io.netty.handler.codec.http.HttpMethod;
 import org.vertx.java.core.Handler;
+import org.vertx.java.core.VoidHandler;
+import org.vertx.java.core.buffer.Buffer;
 import org.vertx.java.core.http.HttpClient;
 import org.vertx.java.core.http.HttpClientResponse;
 import org.vertx.java.core.http.HttpHeaders;
@@ -55,7 +57,21 @@ public class DefaultClientResponseHandler implements ClientResponseHandler {
                 request.response().headers().remove(HttpHeaders.TRANSFER_ENCODING);
                 ProxyService proxyService = new ProxyService();
                 proxyService.fixWarningCookieDomain(context, clientResponse);
-                endRequest();
+                //endRequest();
+                final Buffer clientRepsonseBody = new Buffer();
+                clientResponse.dataHandler(new Handler<Buffer>() {
+                    @Override
+                    public void handle(final Buffer data) {
+                        clientRepsonseBody.appendBuffer(data);
+                    }
+                });
+                clientResponse.endHandler(new VoidHandler() {
+                    @Override
+                    protected void handle() {
+                        request.response().write(clientRepsonseBody);
+                        endRequest();
+                    }
+                });
             }
 
             private void sendPassThroughResponse(final HttpClientResponse clientResponse) {
