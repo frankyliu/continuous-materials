@@ -85,13 +85,6 @@ public class MavenPomFixer {
             }
         }
 
-        List dependencies = model.getDependencies();
-        for (Object dependencyObj : dependencies) {
-            Dependency dependency = (Dependency) dependencyObj;
-            dependency.setVersion("latest.release");
-        }
-
-
         return model;
     }
 }
