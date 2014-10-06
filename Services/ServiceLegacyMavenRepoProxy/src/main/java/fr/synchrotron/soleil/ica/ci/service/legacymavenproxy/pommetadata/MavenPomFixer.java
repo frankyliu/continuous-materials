@@ -9,6 +9,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -48,10 +49,12 @@ public class MavenPomFixer {
 
         List profiles = model.getProfiles();
         if (profiles != null) {
+            List newProfileList = new ArrayList();
             for (Object curProfile : profiles) {
                 Profile profile = (Profile) curProfile;
                 if (profile != null) {
                     String profilName = profile.getId();
+                    //For release and stable profile, we don't conserve them (for compatibility with Gradle < 1.12 but we add their properties
                     if ("release".equals(profilName) || ("stable".equals(profilName))) {
                         Properties properties = profile.getProperties();
                         if (properties != null) {
@@ -59,9 +62,13 @@ public class MavenPomFixer {
                                 model.addProperty((String) entry.getKey(), (String) entry.getValue());
                             }
                         }
+                        //We don't conserve unstable profile
+                    } else if ((!"unstable".equals(profilName)) && (!"continuous-integration".equals(profilName))) {
+                        newProfileList.add(profile);
                     }
                 }
             }
+            model.setProfiles(newProfileList);
         }
 
         DependencyManagement dependencyManagement = model.getDependencyManagement();
@@ -76,6 +83,12 @@ public class MavenPomFixer {
                     }
                 }
             }
+        }
+
+        List dependencies = model.getDependencies();
+        for (Object dependencyObj : dependencies) {
+            Dependency dependency = (Dependency) dependencyObj;
+            dependency.setVersion("latest.release");
         }
 
 
