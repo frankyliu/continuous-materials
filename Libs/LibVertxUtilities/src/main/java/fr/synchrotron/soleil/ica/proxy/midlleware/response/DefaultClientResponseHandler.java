@@ -39,14 +39,15 @@ public class DefaultClientResponseHandler implements ClientResponseHandler {
                     LOG.debug(String.format("Returned endpoint status code: %s", statusCode));
                 }
 
-                switch (statusCode) {
-                    case 404:
-                        sendWithoutTransferEncodingResponse(clientResponse);
-                        break;
-                    default:
-                        sendPassThroughResponse(clientResponse);
-                        break;
-                }
+                sendPassThroughResponse(clientResponse);
+//                switch (statusCode) {
+//                    case 404:
+//                        sendWithoutTransferEncodingResponse(clientResponse);
+//                        break;
+//                    default:
+//                        sendPassThroughResponse(clientResponse);
+//                        break;
+//                }
             }
 
             private void sendWithoutTransferEncodingResponse(final HttpClientResponse clientResponse) {
