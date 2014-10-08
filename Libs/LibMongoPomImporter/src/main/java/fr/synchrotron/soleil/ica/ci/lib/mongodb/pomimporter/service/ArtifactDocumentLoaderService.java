@@ -78,6 +78,9 @@ class ArtifactDocumentLoaderService {
 
         artifactDocument.setBuildContext(buildContext);
 
+
+        artifactDocument.setType("primary");
+
         return artifactDocument;
     }
 
