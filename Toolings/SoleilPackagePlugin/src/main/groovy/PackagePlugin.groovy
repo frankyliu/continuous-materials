@@ -60,6 +60,14 @@ public class PackagePlugin implements Plugin<Project> {
                 }
             }
 
+            ///Invalid cache for resolution strategy
+            project.configurations.all {
+                resolutionStrategy {
+                    // don't cache changing modules at all
+                    cacheChangingModulesFor 0, 'seconds'
+                }
+            }
+
             //Make mergeConfiguration extends all other (expect self)
             Set<Configuration> configurationSet = new HashSet()
             project.configurations.all.each { configuration ->
@@ -93,23 +101,26 @@ public class PackagePlugin implements Plugin<Project> {
                 makeClassPathTask.getTaskDependencies().add(project.tasks["${makeClassPathConfName}"])
             }
 
-            //-- Implement the copDep task with the fusion configuration created above
-            copyDependenciesTask.into "${project.buildDir}/deps"
-            project.configurations.getByName(CONFIGURATION_MERGECONFIG_NAME).resolvedConfiguration.resolvedArtifacts.each {
-                artifact ->
-                    copyDependenciesTask.from(artifact.file.path) {
-                        String classifier = artifact.classifier
-                        if (classifier == null) {
-                            rename '(.*)', "${artifact.moduleVersion.id.group}-${artifact.moduleVersion.id.name}-${artifact.moduleVersion.id.version}.${artifact.extension}"
-                        } else {
-                            rename '(.*)', "${artifact.moduleVersion.id.group}-${artifact.moduleVersion.id.name}-${artifact.moduleVersion.id.version}-${classifier}.${artifact.extension}"
+            //-- Implement the copyDependencies task with the fusion configuration created above
+            //-- Use a preparation task for avoid to evaluate during the initialization phase
+            Task configureCopyDependenciesTask = project.task(TaskNames.TASK_PREPARE_FETCHED_DEPENDENCIES);
+            configureCopyDependenciesTask << {
+                copyDependenciesTask.into "${project.buildDir}/deps"
+                project.configurations.getByName(CONFIGURATION_MERGECONFIG_NAME).resolvedConfiguration.resolvedArtifacts.each {
+                    artifact ->
+                        copyDependenciesTask.from(artifact.file.path) {
+                            String classifier = artifact.classifier
+                            if (classifier == null) {
+                                rename '(.*)', "${artifact.moduleVersion.id.group}-${artifact.moduleVersion.id.name}-${artifact.moduleVersion.id.version}.${artifact.extension}"
+                            } else {
+                                rename '(.*)', "${artifact.moduleVersion.id.group}-${artifact.moduleVersion.id.name}-${artifact.moduleVersion.id.version}-${classifier}.${artifact.extension}"
+                            }
                         }
-                    }
+                }
             }
-
+            copyDependenciesTask.dependsOn configureCopyDependenciesTask
 
         }
-
 
     }
 
