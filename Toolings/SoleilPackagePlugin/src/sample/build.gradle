@@ -1,0 +1,58 @@
+apply plugin: PackagePlugin
+
+version='3.2'
+
+repositories {
+    maven {
+        url "http://calypso/nexus/content/groups/public"
+    }
+}
+
+configurations {
+    commonDeps
+    zouk {
+        extendsFrom commonDeps
+    }
+    all*.exclude group: 'fr.esrf.tango', module: 'TangORB'
+    all*.exclude group: 'fr.soleil.datastorage', module: 'DataRecorderHistoryBean'
+    all*.exclude group: 'fr.soleil.datastorage', module: 'DataRecorderStateBean'
+    all*.exclude group: 'org.apache.commons', module: 'com.springsource.org.apache.commons.httpclient'
+    all*.exclude group: 'org.slf4j', module:'slf4j-log4j12'
+    all*.exclude group: 'log4j', module:'log4j'
+    all*.exclude group: 'commons-lang', module:'commons-lang'
+    all*.exclude group: 'org.slf4j',  module:'slf4j-api'
+    all*.exclude group: 'commons-io' ,  module:'commons-io'
+}
+
+dependencies {
+    commonDeps "commons-beanutils:commons-beanutils:1.6.0:isencia-bundle"
+    zouk("com.isencia.passerelle:com.isencia.passerelle.actor:8.7.4"){
+        exclude module: 'commons-beanutils'
+        exclude module: 'commons-logging'
+        exclude module: 'junit'
+    }
+}
+
+scriptGeneration {
+
+    applyTemplateFileWithMainClass(configurations.zouk,
+            "myMainClass",
+            "src/main/template/windows/zouk.bat.vm",
+            "bin/windows/",
+            "zouk.bat","option:val")
+
+    applyTemplateFile(configurations.zouk,
+            "myMainClass",
+            "src/main/template/linux/zouk.vm",
+            "bin/linux/",
+            "zouk", "option1:val1", "option2:val2")
+
+}
+
+soleilDistribution {
+    into('shared/java') {
+        from fetchedDependencies
+    }
+    from applyTemplate.generationDir
+    from 'src/main/resources'
+}

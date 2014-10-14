@@ -24,7 +24,7 @@ subprojects {
     apply plugin: 'java'
 
     group = 'fr.synchrotron.soleil.ica.ci.lib'
-    version = '2.0.0'
+    version = '2.1.0'
 
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
@@ -200,6 +200,25 @@ project(':Applications/ApplicationMavenRepoIndexer') {
         compile project(':Libs/LibMongoDomainObjects')
     }
 }
+
+project(':Toolings/SoleilPackagePlugin') {
+
+    apply plugin : 'groovy'
+    configurations {
+        gradleLibs
+        compile {
+            extendsFrom gradleLibs
+        }
+    }
+
+    dependencies {
+        gradleLibs gradleApi()
+        gradleLibs localGroovy()
+        compile "velocity:velocity:$velocityVersion"
+    }
+
+}
+
 
 project(':Toolings/DistribPackager') {
 

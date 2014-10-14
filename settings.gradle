@@ -14,6 +14,6 @@ include 'Libs/LibWorkflow',
         'Applications/ApplicationMavenRepoIndexer',
         'Toolings/GradleDistribution',
         'Toolings/DistribPackager',
-
+        'Toolings/SoleilPackagePlugin',
         'IntegrationTests/Vertx'
 
