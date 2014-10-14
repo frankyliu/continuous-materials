@@ -17,12 +17,10 @@ configurations {
 dependencies {
     initDir project(':Libs/LibMongoLatestVersionResolver')
     initDir project(':Libs/LibMongoUtilities')
-    initDir(project(':Toolings/DistribPackager')) {
+    initDir(project(':Toolings/SoleilPackagePlugin')) {
         transitive = false
     }
     initDir "org.mongodb:mongo-java-driver:$mongoJavaDriverVerison"
-
-
     initDir "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
     initDir "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
     initDir "velocity:velocity:$velocityVersion"
@@ -59,7 +57,7 @@ task downloadGradleDistrib(type: DownloadGradle) {
 }
 
 task buildCustomGradleDistrib(type: Zip, dependsOn: downloadGradleDistrib) {
-    description 'Build a custom Gradle distribution wtih custom init.d directory'
+    description 'Build a Soleil custom Gradle distribution with a prepared init.d directory'
     baseName = 'custom-gradle'
     classifier = 'bin'
     from zipTree(downloadGradleDistrib.destinationFile)
