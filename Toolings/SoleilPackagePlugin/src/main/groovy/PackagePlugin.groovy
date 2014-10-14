@@ -2,26 +2,13 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.bundling.Zip
 
 public class PackagePlugin implements Plugin<Project> {
 
     private static final String CONFIGURATION_MERGECONFIG_NAME = "mergeConfig"
-
-//    private addTask(Project project, String taskName, String description){
-//        Task task = project.task(taskName);
-//        if (description!=null) {
-//            task.description = description;
-//        }
-//    }
-//
-//    private addTaskWithDependsOn(Project project, String taskName, String dependedTask, String description){
-//        Task task = project.task(taskName);
-//        if (description!=null) {
-//            task.description = description;
-//        }
-//    }
 
     public void apply(Project project) {
 
@@ -61,13 +48,27 @@ public class PackagePlugin implements Plugin<Project> {
         project.ext.nbGeneration = 0
         project.extensions.add(ScriptGeneration.CONFIGURATION_NAME, new ScriptGeneration(project))
 
+        //-- Create a fusion configuration
+        Configuration mergeConfig = project.configurations.create(CONFIGURATION_MERGECONFIG_NAME)
+
         project.afterEvaluate {
 
-            //-- Create a fusion configuration
-            Set<Configuration> scriptConfigurations = new HashSet()
-            scriptConfigurations.addAll(project.configurations.all);
-            Configuration fusionConfig = project.configurations.create(CONFIGURATION_MERGECONFIG_NAME)
-            fusionConfig.setExtendsFrom(scriptConfigurations)
+            //Set changing to true for all dependencies of all configurations
+            project.configurations*.allDependencies*.each { dependency ->
+                if (dependency instanceof ExternalModuleDependency) {
+                    ((ExternalModuleDependency) dependency).changing = true
+                }
+            }
+
+            //Make mergeConfiguration extends all other (expect self)
+            Set<Configuration> configurationSet = new HashSet()
+            project.configurations.all.each { configuration ->
+                if (!configuration.name.equals(CONFIGURATION_MERGECONFIG_NAME)) {
+                    configurationSet.add(configuration);
+                }
+
+            }
+            mergeConfig.setExtendsFrom(configurationSet)
 
             //--Create a classpath generator task for each configuration
             //-- Each classpath generator configuration will depends on makeClassPathTask
