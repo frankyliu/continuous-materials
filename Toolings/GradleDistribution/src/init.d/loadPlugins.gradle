@@ -1,0 +1,7 @@
+allprojects {
+    buildscript {
+        dependencies {
+            classpath fileTree(dir: "${initscript.sourceFile.parentFile}/lib/plugins", include: '*.jar')
+        }
+    }
+}

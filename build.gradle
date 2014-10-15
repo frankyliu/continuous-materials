@@ -202,21 +202,19 @@ project(':Applications/ApplicationMavenRepoIndexer') {
 }
 
 project(':Toolings/SoleilPackagePlugin') {
-
     apply plugin : 'groovy'
     configurations {
         gradleLibs
+        pluginLibs
         compile {
-            extendsFrom gradleLibs
+            extendsFrom gradleLibs, pluginLibs
         }
     }
-
     dependencies {
         gradleLibs gradleApi()
         gradleLibs localGroovy()
-        compile "velocity:velocity:$velocityVersion"
+        pluginLibs "velocity:velocity:$velocityVersion"
     }
-
 }
 
 

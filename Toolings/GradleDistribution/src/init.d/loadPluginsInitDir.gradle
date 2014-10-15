@@ -1,7 +1,0 @@
-rootProject {
-    buildscript {
-        dependencies {
-            classpath fileTree(dir: "${initscript.sourceFile.parentFile}/lib", include: '*.jar')
-        }
-    }
-}

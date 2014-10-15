@@ -8,22 +8,28 @@ ext {
 }
 
 configurations {
-    initDir
+    initDirLib
+    plugininitDirLib
     compile {
-        extendsFrom initDir
+        extendsFrom initDirLib
     }
 }
 
 dependencies {
-    initDir project(':Libs/LibMongoLatestVersionResolver')
-    initDir project(':Libs/LibMongoUtilities')
-    initDir(project(':Toolings/SoleilPackagePlugin')) {
+    plugininitDirLib(project(':Toolings/SoleilPackagePlugin')) {
         transitive = false
     }
-    initDir "org.mongodb:mongo-java-driver:$mongoJavaDriverVerison"
-    initDir "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
-    initDir "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-    initDir "velocity:velocity:$velocityVersion"
+    plugininitDirLib project(path:':Toolings/SoleilPackagePlugin', configuration:'pluginLibs')
+
+    initDirLib project(':Libs/LibMongoLatestVersionResolver')
+    initDirLib project(':Libs/LibMongoUtilities')
+    initDirLib "org.mongodb:mongo-java-driver:$mongoJavaDriverVerison"
+    initDirLib "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+    initDirLib "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+}
+
+jar {
+    baseName = 'tooling-distribution-classes'
 }
 
 task buildInitDir(type: Copy, dependsOn: jar) {
@@ -32,14 +38,14 @@ task buildInitDir(type: Copy, dependsOn: jar) {
         include "**/*.gradle"
     }
     into("lib") {
-        from configurations.initDir
+        from configurations.initDirLib
         rename '(.*)-(.*).jar', '$1.jar'
         from jar.destinationDir
     }
-}
-
-jar {
-    baseName = 'tooling-classes'
+    into("lib/plugins") {
+        from configurations.plugininitDirLib
+        rename '(.*)-(.*).jar', '$1.jar'
+    }
 }
 
 task distInitDir(type: Zip, dependsOn: buildInitDir) {

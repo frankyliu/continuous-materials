@@ -4,7 +4,7 @@ initscript {
         classpath files('lib/LibMongoUtilities.jar')
         classpath files('lib/mongo-java-driver.jar')
         classpath files('lib/LibWorkflow.jar')
-        classpath files('lib/tooling-classes.jar')
+        classpath files('lib/tooling-distribution-classes.jar')
     }
 }
 
