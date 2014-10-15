@@ -84,7 +84,7 @@ public class ScriptGenerationTask extends DefaultTask {
         logger.info("Generated.");
     }
 
-    private Dependency getMavenDependency(String line) {
+    Dependency getMavenDependency(String line) {
         Dependency dependency = new Dependency();
         String[] lineTab = line.split("-");
         String groupId = lineTab[0];
@@ -109,7 +109,7 @@ public class ScriptGenerationTask extends DefaultTask {
         return dependency;
     }
 
-    private String processTemplate(File templateInputFile, Map<String, Object> params) {
+    String processTemplate(File templateInputFile, Map<String, Object> params) {
 
         String content;
         try {
@@ -117,9 +117,6 @@ public class ScriptGenerationTask extends DefaultTask {
             VelocityEngine velocityEngine = new VelocityEngine();
             velocityEngine.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, templateInputFile.getParent());
             velocityEngine.init();
-
-//            //-- Retrieve template
-//            Template template = velocityEngine.getTemplate(templateInputFile.getName(), "UTF-8");
 
             //-- Make VelocityContext Engine
             VelocityContext velocityContext = new VelocityContext();
