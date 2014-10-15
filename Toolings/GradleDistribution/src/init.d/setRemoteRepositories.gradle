@@ -2,7 +2,7 @@ apply plugin: SetRemoteRepositoriesPlugin
 
 class SetRemoteRepositoriesPlugin implements Plugin<Gradle> {
 
-    private static String NEXUSMAVEN_REPOSITORY_URL = "http://calypso/nexus/content/groups/public"
+    private static String NEXUSMAVEN_REPOSITORY_URL = "http://build-mongodb-1.ica.synchrotron-soleil.fr:8090/legacy/"
 
     void apply(Gradle gradle) {
 
@@ -10,16 +10,17 @@ class SetRemoteRepositoriesPlugin implements Plugin<Gradle> {
 
             project.repositories {
 
-                //remove all repositories not pointing to the enterprise repository url
+                //remove all repositories not equals to the selected enterprise repository
                 all {
                     ArtifactRepository repo ->
                         if (!(repo instanceof MavenArtifactRepository) || repo.url.toString() != NEXUSMAVEN_REPOSITORY_URL) {
-                            //project.logger.lifecycle "Repository ${repo.url} removed. Only $NEXUSMAVEN_REPOSITORY_URL is allowed"
+                            project.logger.info "Repository ${repo.url} removed. Only $NEXUSMAVEN_REPOSITORY_URL is allowed"
                             remove repo
                         }
                 }
 
                 // add the enterprise repository
+                project.logger.info "Adding $NEXUSMAVEN_REPOSITORY_URL to the build script"
                 maven {
                     name "Soleil Nexus Maven Repository"
                     url NEXUSMAVEN_REPOSITORY_URL

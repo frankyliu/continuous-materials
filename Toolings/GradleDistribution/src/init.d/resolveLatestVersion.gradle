@@ -16,7 +16,7 @@ import fr.synchrotron.soleil.ica.tools.gradle.distrib.MavenVersionResolver;
 class LatestDependencyPlugin implements Plugin<Gradle> {
 
     def configMongo = [
-            mongoHost  : '127.0.0.1',
+            mongoHost  : 'build-mongodb-1.ica.synchrotron-soleil.fr',
             mongoPort  : '27017',
             mongoDbName: 'repo'
     ]
