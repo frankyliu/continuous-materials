@@ -63,18 +63,18 @@ public class ScriptGenerationTask extends DefaultTask {
         }
         options.put("classpathList", classpathList);
 
-        int k = 0;
-        List<Dependency> dependencies = new ArrayList<>();
-        classpathList.each { String classpathLine ->
-            Dependency dep = getMavenDependency(classpathLine)
-            if (k == 0) {
-                options.put("project", dep);
-            } else {
-                dependencies.add(dep)
-            }
-            k++;
-        }
-        options.put("dependencies", dependencies);
+//        int k = 0;
+//        List<Dependency> dependencies = new ArrayList<>();
+//        classpathList.each { String classpathLine ->
+//            Dependency dep = getMavenDependency(classpathLine)
+//            if (k == 0) {
+//                options.put("project", dep);
+//            } else {
+//                dependencies.add(dep)
+//            }
+//            k++;
+//        }
+//        options.put("dependencies", dependencies);
 
 
         String result = processTemplate(new File(templateFilePath), options)
@@ -84,30 +84,30 @@ public class ScriptGenerationTask extends DefaultTask {
         logger.info("Generated.");
     }
 
-    Dependency getMavenDependency(String line) {
-        Dependency dependency = new Dependency();
-        String[] lineTab = line.split("-");
-        String groupId = lineTab[0];
-        String artifactId = lineTab[1];
-        dependency.GroupId = groupId;
-        dependency.ArtifactId = artifactId;
-        String version;
-        String extension;
-        if (lineTab.length > 3) {
-            version = lineTab[2];
-            String classifierExtension = lineTab[3];
-            dependency.Classifier = classifierExtension.substring(0, classifierExtension.lastIndexOf("."));
-            extension = classifierExtension.substring(classifierExtension.lastIndexOf(".") + 1);
-
-        } else {
-            String otherPart = lineTab[2];
-            extension = otherPart.substring(otherPart.lastIndexOf("."));
-            version = otherPart.substring(0, otherPart.lastIndexOf("."));
-        }
-        dependency.Version = version;
-        dependency.Extension = extension;
-        return dependency;
-    }
+//    Dependency getMavenDependency(String line) {
+//        Dependency dependency = new Dependency();
+//        String[] lineTab = line.split("-");
+//        String groupId = lineTab[0];
+//        String artifactId = lineTab[1];
+//        dependency.GroupId = groupId;
+//        dependency.ArtifactId = artifactId;
+//        String version;
+//        String extension;
+//        if (lineTab.length > 3) {
+//            version = lineTab[2];
+//            String classifierExtension = lineTab[3];
+//            dependency.Classifier = classifierExtension.substring(0, classifierExtension.lastIndexOf("."));
+//            extension = classifierExtension.substring(classifierExtension.lastIndexOf(".") + 1);
+//
+//        } else {
+//            String otherPart = lineTab[2];
+//            extension = otherPart.substring(otherPart.lastIndexOf("."));
+//            version = otherPart.substring(0, otherPart.lastIndexOf("."));
+//        }
+//        dependency.Version = version;
+//        dependency.Extension = extension;
+//        return dependency;
+//    }
 
     String processTemplate(File templateInputFile, Map<String, Object> params) {
 
