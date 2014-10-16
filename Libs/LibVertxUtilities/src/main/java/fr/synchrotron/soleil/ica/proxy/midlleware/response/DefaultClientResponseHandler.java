@@ -2,7 +2,6 @@ package fr.synchrotron.soleil.ica.proxy.midlleware.response;
 
 import fr.synchrotron.soleil.ica.proxy.midlleware.MiddlewareContext;
 import fr.synchrotron.soleil.ica.proxy.midlleware.ProxyService;
-import io.netty.handler.codec.http.HttpMethod;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.VoidHandler;
 import org.vertx.java.core.buffer.Buffer;
@@ -88,10 +87,10 @@ public class DefaultClientResponseHandler implements ClientResponseHandler {
                     }
                 });
 
-                if (HttpMethod.GET.name().equals(request.method())) {
-                    request.response().setChunked(true);
-                    Pump.createPump(clientResponse, request.response()).start();
-                }
+//                if (HttpMethod.GET.name().equals(request.method())) {
+                request.response().setChunked(true);
+                Pump.createPump(clientResponse, request.response()).start();
+//                }
 
                 clientResponse.resume();
             }

@@ -17,6 +17,11 @@ public class DefaultWorkflow extends Workflow {
     }
 
     public StatusVersion extractStatusAndVersionFromMavenVersion(String version) {
+
+        if (version == null) {
+            throw new NullPointerException("A version must be set.");
+        }
+
         final String snapshotVersionSuffix = "-SNAPSHOT";
         StatusVersion statusVersion = new StatusVersion();
         if (version.endsWith(snapshotVersionSuffix)) {

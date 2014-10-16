@@ -8,6 +8,7 @@ import fr.synchrotron.soleil.ica.ci.lib.workflow.DefaultWorkflow;
 import fr.synchrotron.soleil.ica.ci.lib.workflow.Workflow;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.model.Model;
+import org.apache.maven.model.Parent;
 
 import java.io.*;
 
@@ -65,7 +66,20 @@ public class POMImportService {
     private void importPomFile(Reader pomReader, Workflow workflow) {
         PomReaderService pomReaderService = new PomReaderService();
         final Model pomModel = pomReaderService.getModel(pomReader);
+        fixVersionInPomModel(pomModel);
         insertOrUpdateArtifactDocument(pomModel, workflow);
+    }
+
+    private void fixVersionInPomModel(Model pomModel) {
+        if (pomModel.getVersion() != null) {
+            return;
+        }
+
+        Parent parent = pomModel.getParent();
+        if (parent == null) {
+            throw new RuntimeException("No parent and no version in the given pom.");
+        }
+        pomModel.setVersion(parent.getVersion());
     }
 
     void insertOrUpdateArtifactDocument(Model pomModel, Workflow workflow) {

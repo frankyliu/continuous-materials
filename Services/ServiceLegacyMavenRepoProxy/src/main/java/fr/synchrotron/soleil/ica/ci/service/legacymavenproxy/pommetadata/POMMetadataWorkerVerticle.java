@@ -90,6 +90,7 @@ public class POMMetadataWorkerVerticle extends BusModBase {
             pomImportService.importPomFile(pomContent, new DefaultWorkflow());
             message.reply();
         } catch (Throwable e) {
+            e.printStackTrace();
             message.fail(-1, e.getMessage());
         }
     }
