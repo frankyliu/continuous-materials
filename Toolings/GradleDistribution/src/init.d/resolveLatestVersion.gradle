@@ -32,11 +32,10 @@ class LatestDependencyPlugin implements Plugin<Gradle> {
                         if (requestedVersion.startsWith("latest")) {
                             def group = details.requested.group
                             def name = details.requested.name
-                            println "Getting " + group + name + "-" + requestedVersion
+                            logger.debug "Getting ${group}:${name}:${requestedVersion}"
                             MavenVersionResolver resolver = new MavenVersionResolver(configMongo);
-                            //println "resolver " + resolver
                             def latestVersion = resolver.getLatestVersion(group, name)
-                            logger.lifecycle("Resolved latest dependency $group:$name:$requestedVersion to $latestVersion \n")
+                            logger.info("Resolved latest dependency $group:$name:$requestedVersion to $latestVersion \n")
                             details.useVersion latestVersion
                         }
                 }
