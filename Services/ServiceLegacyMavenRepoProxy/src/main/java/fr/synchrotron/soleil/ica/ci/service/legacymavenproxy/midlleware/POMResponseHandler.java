@@ -3,6 +3,7 @@ package fr.synchrotron.soleil.ica.ci.service.legacymavenproxy.midlleware;
 import com.github.ebx.core.MessageFilterService;
 import com.github.ebx.core.MessagingTemplate;
 import fr.synchrotron.soleil.ica.ci.service.legacymavenproxy.ServiceAddressRegistry;
+import fr.synchrotron.soleil.ica.ci.service.legacymavenproxy.service.Sha1Getter;
 import fr.synchrotron.soleil.ica.proxy.midlleware.MiddlewareContext;
 import fr.synchrotron.soleil.ica.proxy.midlleware.ProxyService;
 import fr.synchrotron.soleil.ica.proxy.midlleware.response.DefaultClientResponseHandler;
@@ -143,6 +144,8 @@ public class POMResponseHandler extends DefaultClientResponseHandler {
             request.response().setStatusCode(clientResponse.statusCode());
             request.response().setStatusMessage(clientResponse.statusMessage());
             request.response().headers().set(clientResponse.headers());
+            Sha1Getter sha1Getter = new Sha1Getter();
+            request.response().putHeader(HttpHeaders.ETAG, String.valueOf(messagePayload.hashCode()));
             request.response().putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(messagePayload.getBytes().length));
             ProxyService proxyService = new ProxyService();
             proxyService.fixWarningCookieDomain(context, clientResponse);

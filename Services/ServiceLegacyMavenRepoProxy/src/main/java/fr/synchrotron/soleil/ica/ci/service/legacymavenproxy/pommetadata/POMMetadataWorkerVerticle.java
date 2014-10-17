@@ -6,6 +6,7 @@ import fr.synchrotron.soleil.ica.ci.lib.mongodb.pomimporter.service.dictionary.S
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.BasicMongoDBDataSource;
 import fr.synchrotron.soleil.ica.ci.lib.workflow.DefaultWorkflow;
 import fr.synchrotron.soleil.ica.ci.service.legacymavenproxy.ServiceAddressRegistry;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.vertx.java.busmods.BusModBase;
@@ -15,6 +16,8 @@ import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Gregory Boissinot
@@ -72,6 +75,20 @@ public class POMMetadataWorkerVerticle extends BusModBase {
                     new MavenPomFixer(new MongoDBArtifactRepository(
                             mongoDBDatasource));
             final Model resolvedPomModel = mavenPomFixer.getModelWithResolvedParent(pomContent);
+
+            //POM for consumers
+            //Remove dependency with scope test
+            List<Dependency> keeypedDependencies = new ArrayList<>();
+            List dependencies = resolvedPomModel.getDependencies();
+            for (Object dependencyObject : dependencies) {
+                Dependency dependency = (Dependency) dependencyObject;
+                if (!"test".equals(dependency.getScope())) {
+                    keeypedDependencies.add(dependency);
+                }
+            }
+            resolvedPomModel.setDependencies(keeypedDependencies);
+
+
             StringWriter stringWriter = new StringWriter();
             new MavenXpp3Writer().write(stringWriter, resolvedPomModel);
             message.reply(stringWriter.toString());

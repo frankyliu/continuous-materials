@@ -66,15 +66,27 @@ public class POMImportService {
     private void importPomFile(Reader pomReader, Workflow workflow) {
         PomReaderService pomReaderService = new PomReaderService();
         final Model pomModel = pomReaderService.getModel(pomReader);
+        fixGroupInPomModel(pomModel);
         fixVersionInPomModel(pomModel);
         insertOrUpdateArtifactDocument(pomModel, workflow);
+    }
+
+    private void fixGroupInPomModel(Model pomModel) {
+        if (pomModel.getGroupId() != null) {
+            return;
+        }
+
+        Parent parent = pomModel.getParent();
+        if (parent == null) {
+            throw new RuntimeException("No parent and no version in the given pom.");
+        }
+        pomModel.setGroupId(parent.getGroupId());
     }
 
     private void fixVersionInPomModel(Model pomModel) {
         if (pomModel.getVersion() != null) {
             return;
         }
-
         Parent parent = pomModel.getParent();
         if (parent == null) {
             throw new RuntimeException("No parent and no version in the given pom.");

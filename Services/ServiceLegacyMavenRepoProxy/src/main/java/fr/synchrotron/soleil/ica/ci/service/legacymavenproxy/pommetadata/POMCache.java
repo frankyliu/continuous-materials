@@ -1,5 +1,6 @@
 package fr.synchrotron.soleil.ica.ci.service.legacymavenproxy.pommetadata;
 
+import fr.synchrotron.soleil.ica.ci.service.legacymavenproxy.service.Sha1Getter;
 import org.vertx.java.core.Vertx;
 import org.vertx.java.core.shareddata.ConcurrentSharedMap;
 import org.vertx.java.core.shareddata.SharedData;
@@ -46,31 +47,10 @@ public class POMCache {
         digester.reset();
         final byte[] bytes = pomContent.getBytes();
         digester.update(bytes, 0, bytes.length);
-        final String sha1 = encode(digester.digest());
+        Sha1Getter sha1Getter = new Sha1Getter();
+        final String sha1 = sha1Getter.getSha1(digester.digest());
         pomSha1Map.put(sha1Path, sha1);
 
-    }
-
-
-    private String encode(byte[] binaryData) {
-        if (binaryData.length != 16 && binaryData.length != 20) {
-            int bitLength = binaryData.length * 8;
-            throw new IllegalArgumentException("Unrecognised length for binary data: " + bitLength + " bits");
-        }
-
-        String retValue = "";
-
-        for (int i = 0; i < binaryData.length; i++) {
-            String t = Integer.toHexString(binaryData[i] & 0xff);
-
-            if (t.length() == 1) {
-                retValue += ("0" + t);
-            } else {
-                retValue += t;
-            }
-        }
-
-        return retValue.trim();
     }
 
 }
