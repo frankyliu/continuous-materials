@@ -13,6 +13,7 @@ configurations {
     zouk {
         extendsFrom commonDeps
     }
+    salsa
     all*.exclude group: 'fr.esrf.tango', module: 'TangORB'
     all*.exclude group: 'fr.soleil.datastorage', module: 'DataRecorderHistoryBean'
     all*.exclude group: 'fr.soleil.datastorage', module: 'DataRecorderStateBean'
@@ -31,9 +32,26 @@ dependencies {
         exclude module: 'commons-logging'
         exclude module: 'junit'
     }
+    zouk "fr.soleil.gui:Zouk:latest.integration"
+    salsa "fr.soleil.gui.salsa:SalsaClient:latest.release"
+
 }
 
 scriptGeneration {
+
+    //zouk
+    applyTemplateFileWithMainClass(configurations.zouk,
+            "Scienta.ScientaPanel",
+            "src/main/template/windows/zouk.bat.vm",
+            "bin/windows/",
+            "zouk.bat")
+
+    applyTemplateFileWithMainClass(configurations.zouk,
+            "Scienta.ScientaPanel",
+            "src/main/template/linux/zouk.vm",
+            "bin/linux/",
+            "zouk")
+
 
     applyTemplateFileWithMainClass(configurations.zouk,
             "myMainClass",
