@@ -12,6 +12,8 @@ public class PackagePlugin implements Plugin<Project> {
 
     public void apply(Project project) {
 
+        def scriptGeneration = new ScriptGeneration(project)
+
         if ((!project.getPlugins().hasPlugin('base'))
                 || (!project.getPlugins().hasPlugin('java'))) {
             project.apply(plugin: 'base')
@@ -25,7 +27,7 @@ public class PackagePlugin implements Plugin<Project> {
         Task generateScriptFileTask = project.task(TaskNames.TASK_APPLY_TEMPLATE)
         generateScriptFileTask.description = 'Hook task for applying a template file.'
         generateScriptFileTask.getTaskDependencies().add(makeClassPathTask)
-        generateScriptFileTask.ext.generationDir = ScriptGeneration.TEMPLATE_GENERATED_DIR
+        generateScriptFileTask.ext.generationDir = scriptGeneration.getTemplateFilePath();
 
         //--Create a public distribution task
         Task distributionTask = project.task(TaskNames.TASK_SOLEIL_DISTRIBUTION, type: Zip)
@@ -46,7 +48,9 @@ public class PackagePlugin implements Plugin<Project> {
         copyDependenciesTask.description = 'A copy spec with all the dependencies of a fusion configuration.'
 
         project.ext.nbGeneration = 0
-        project.extensions.add(ScriptGeneration.CONFIGURATION_NAME, new ScriptGeneration(project))
+
+
+        project.extensions.add(ScriptGeneration.CONFIGURATION_NAME, scriptGeneration)
 
         //-- Create a fusion configuration
         Configuration mergeConfig = project.configurations.create(CONFIGURATION_MERGECONFIG_NAME)
@@ -93,9 +97,9 @@ public class PackagePlugin implements Plugin<Project> {
                             line = key + "-" + project.ext.map.get(key) + "-${classifier}.${artifact.extension}"
                         }
 
-                        project.file(ScriptGeneration.GENERATED_CLASSPATH_DIR + "/classpath${conf.name}").mkdirs()
-                        project.file(ScriptGeneration.GENERATED_CLASSPATH_DIR + "/classpath${conf.name}/classpath.txt") << line
-                        project.file(ScriptGeneration.GENERATED_CLASSPATH_DIR + "/classpath${conf.name}/classpath.txt") << "\n"
+                        project.file(scriptGeneration.getGeneratedDirPath() + "/classpath${conf.name}").mkdirs()
+                        project.file(scriptGeneration.getGeneratedDirPath() + "/classpath${conf.name}/classpath.txt") << line
+                        project.file(scriptGeneration.getGeneratedDirPath() + "/classpath${conf.name}/classpath.txt") << "\n"
                     }
                 }
                 makeClassPathTask.getTaskDependencies().add(project.tasks["${makeClassPathConfName}"])
