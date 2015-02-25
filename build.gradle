@@ -217,28 +217,6 @@ project(':Toolings/SoleilPackagePlugin') {
     }
 }
 
-
-project(':Toolings/DistribPackager') {
-
-    apply plugin : 'java'
-    apply plugin : 'groovy'
-
-    configurations {
-        gradleLibs
-        compile {
-            extendsFrom gradleLibs
-        }
-    }
-
-    dependencies {
-        gradleLibs gradleApi()
-        gradleLibs localGroovy()
-        compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
-        compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-        compile "velocity:velocity:$velocityVersion"
-    }
-}
-
 //-- Integration Tests
 project(':IntegrationTests/Vertx') {
 
