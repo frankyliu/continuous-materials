@@ -9,17 +9,6 @@ import org.gradle.api.tasks.incremental.IncrementalTaskInputs
 
 public class ScriptGenerationTask extends DefaultTask {
 
-    class Dependency {
-        String GroupId;
-        String ArtifactId;
-        String Version
-        String Classifier;
-        String Extension;
-    }
-
-    class Project extends Dependency {
-    }
-
     @Input
     def Configuration configuration
     @Input
@@ -36,7 +25,7 @@ public class ScriptGenerationTask extends DefaultTask {
     def String outputGenerationDir
 
     @TaskAction
-    void execute(IncrementalTaskInputs inputs) {
+    public void execute(IncrementalTaskInputs inputs) {
 
         logger.info("Generating script the following elements: ");
         logger.info("--> Configuration: " + configuration.name);
@@ -70,8 +59,7 @@ public class ScriptGenerationTask extends DefaultTask {
         logger.info("Generated.");
     }
 
-    String processTemplate(File templateInputFile, Map<String, Object> params) {
-
+    private String processTemplate(File templateInputFile, Map<String, Object> params) {
         String content;
         try {
 
@@ -92,15 +80,12 @@ public class ScriptGenerationTask extends DefaultTask {
             }
 
             InputStreamReader reader = new InputStreamReader(input, "UTF-8");
-
             if (!velocityEngine.evaluate(velocityContext, resultWriter, templateInputFile.getName(), reader)) {
                 throw new RuntimeException("Failed to convert the template into html.");
             }
 
             content = resultWriter.toString();
-
             resultWriter.flush();
-
             resultWriter.close();
         } catch (Throwable e) {
             throw new RuntimeException(e);

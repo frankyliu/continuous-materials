@@ -6,7 +6,7 @@ public class ScriptGeneration {
 
     public static final String CONFIGURATION_NAME = "scriptGeneration"
 
-    private static final String TEMPLATE_GENERATED_DIR = "generatedScripts"
+    public static final String TEMPLATE_GENERATED_DIR = "generatedScripts"
     private static final String GENERATED_CLASSPATH_DIR = "classpathDir"
 
     private Project project;

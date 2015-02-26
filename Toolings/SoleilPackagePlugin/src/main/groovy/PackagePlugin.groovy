@@ -24,16 +24,19 @@ public class PackagePlugin implements Plugin<Project> {
         makeClassPathTask.description = 'Hook task for generating a classpath of each configuration.'
 
         //--Create a generate script file task
-        Task generateScriptFileTask = project.task(TaskNames.TASK_APPLY_TEMPLATE)
+        Task generateScriptFileTask = project.task(TaskNames.TASK_APPLY_TEMPLATE, type:ApplyTemplateTask)
         generateScriptFileTask.description = 'Hook task for applying a template file.'
         generateScriptFileTask.getTaskDependencies().add(makeClassPathTask)
-        generateScriptFileTask.ext.generationDir = scriptGeneration.getTemplateFilePath();
+//        generateScriptFileTask.ext.generationDir = project.buildDir.path + File.separatorChar + ScriptGeneration.TEMPLATE_GENERATED_DIR;
+
+//        generateScriptFileTask.doFirst {
+//            generateScriptFileTask.ext.generationDir = project.buildDir.path + File.separatorChar + ScriptGeneration.TEMPLATE_GENERATED_DIR;
+//        }
 
         //--Create a public distribution task
         Task distributionTask = project.task(TaskNames.TASK_SOLEIL_DISTRIBUTION, type: Zip)
         distributionTask.description = 'Make a Soleil Distribution.'
         distributionTask.getTaskDependencies().add(generateScriptFileTask)
-
 
         project.ext.map = [:]
         project.task(TaskNames.TASK_INTERNAL_STORE_LATEST_VERSION) << {
@@ -48,14 +51,16 @@ public class PackagePlugin implements Plugin<Project> {
         copyDependenciesTask.description = 'A copy spec with all the dependencies of a fusion configuration.'
 
         project.ext.nbGeneration = 0
-
-
         project.extensions.add(ScriptGeneration.CONFIGURATION_NAME, scriptGeneration)
 
         //-- Create a fusion configuration
         Configuration mergeConfig = project.configurations.create(CONFIGURATION_MERGECONFIG_NAME)
 
+        project.tasks[TaskNames.TASK_APPLY_TEMPLATE].ext.generationDir = 'toto'
+
         project.afterEvaluate {
+
+            project.tasks[TaskNames.TASK_APPLY_TEMPLATE].generationDir = project.buildDir.path + File.separatorChar + ScriptGeneration.TEMPLATE_GENERATED_DIR;
 
             //Set changing to true for all dependencies of all configurations
             project.configurations*.allDependencies*.each { dependency ->
@@ -127,6 +132,5 @@ public class PackagePlugin implements Plugin<Project> {
         }
 
     }
-
 
 }
